@@ -19,18 +19,19 @@ export default function RootLayout({ children }) {
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css"
       />
-      <body className={roboto.className}>
+      <body className={`${roboto.className} p-4 pl-[350px]`} >
         <Sidebar.Root>
           <Sidebar.Header />
           <Sidebar.Search />
-          <Sidebar.Item icon="bi-house-door-fill" text="Home" />
-          <Sidebar.Item icon="bi bi-person-fill" text="Meu Perfil" />
-          <Sidebar.Item icon="bi-bookmark-fill" text="Designaçōes" />
-          <Sidebar.Item icon="bi bi-file-earmark-text-fill" text="Programação" />
+          <Sidebar.Item icon="bi-house-door-fill" text="Home" href="/"/>
+          <Sidebar.Item icon="bi bi-person-fill" text="Meu Perfil" href="profile" />
+          <Sidebar.Item icon="bi-bookmark-fill" text="Designaçōes" href="/designations" />
+          <Sidebar.Item icon="bi bi-file-earmark-text-fill" text="Programação" href="/schedule" />
+          <Sidebar.Item icon="bi bi-people-fill" text="Publicadores" href="/publishers" />
           <div class="my-4 bg-gray-600 h-[1px]"></div>
           <Sidebar.Footer />
         </Sidebar.Root>
-        {children}
+        {children}      
       </body>
     </html>
   );
