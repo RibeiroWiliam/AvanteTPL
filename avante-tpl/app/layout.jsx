@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
           <Sidebar.Search />
           <Sidebar.Item icon="bi-house-door-fill" text="Home" href="/"/>
           <Sidebar.Item icon="bi bi-person-fill" text="Meu Perfil" href="profile" />
-          <Sidebar.Item icon="bi-bookmark-fill" text="Designaçōes" href="/designations" />
+          <Sidebar.Item icon="bi-bookmark-fill" text="Designaçōes" href="/assignments" />
           <Sidebar.Item icon="bi bi-file-earmark-text-fill" text="Programação" href="/schedule" />
           <Sidebar.Item icon="bi bi-people-fill" text="Publicadores" href="/publishers" />
           <div class="my-4 bg-gray-600 h-[1px]"></div>
