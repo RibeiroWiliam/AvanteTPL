@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
+
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -15,18 +16,21 @@ export const authOptions = {
         password: { label: "Senha", type: "password"}
       },
       async authorize(credentials) {
-        if(!credentials.name || credentials.password ){
+        if(!credentials.name || !credentials.password ){
           return null
         }
-        const publisher = prisma.publisher.findUnique({
-          where: credentials.name
+        console.log(credentials)
+        const publisher = await prisma.publisher.findFirst({
+          where: {
+            name: credentials.name
+          }
         })
 
         if(!publisher){
           return null
         }
 
-        const passwordsMatch = await bcrypt.compare(credentials.password, publisher.password)
+        const passwordsMatch = await credentials.password === publisher.password
 
         if(!passwordsMatch){
           return null

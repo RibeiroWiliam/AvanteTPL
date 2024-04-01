@@ -2,12 +2,7 @@
 
 import { useState } from 'react';
 
-export default function SidebarHeader(){
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-
-  function openSidebar() {
-    setSidebarVisible(!sidebarVisible);
-  }
+export default function SidebarHeader({toggleSidebar}){
 
   return(
 <div className="text-gray-100 text-xl">
@@ -16,7 +11,7 @@ export default function SidebarHeader(){
           <h1 className="font-bold text-gray-200 text-[15px] ml-3">AvanteTPL</h1>
           <i
             className="bi bi-x cursor-pointer ml-28 lg:hidden"
-            onClick={openSidebar}
+            onClick={toggleSidebar}
           ></i>
         </div>
         <div className="my-2 bg-gray-600 h-[1px]"></div>

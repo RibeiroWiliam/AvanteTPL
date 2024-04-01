@@ -16,7 +16,7 @@ export default function Login() {
       ...data,
       redirect: false,
     });
-    router.push("/");
+    router.push("/dashboard");
   };
   return (
     <main>
@@ -49,7 +49,7 @@ export default function Login() {
                   value={data.name}
                   onChange={(e) => {setData({...data, name: e.target.value})}}
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full px-4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -62,7 +62,7 @@ export default function Login() {
                 >
                   Senha
                 </label>
-                <div class="text-sm">
+                <div className="text-sm">
                   <a
                     href="#"
                     className="font-semibold text-indigo-600 hover:text-indigo-500"
@@ -77,10 +77,10 @@ export default function Login() {
                   name="password"
                   type="password"
                   value={data.password}
-                  autocomplete="current-password"
+                  autoComplete="current-password"
                   onChange={(e) => {setData({...data, password: e.target.value})}}
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block px-4 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>

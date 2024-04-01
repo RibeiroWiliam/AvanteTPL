@@ -3,18 +3,37 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET(){
-  
+export async function GET(request, { params }) {
+  const name = params.name;
+
+  try {
+    // Verifica se o publisher existe antes de atualizá-lo
+    const publisher = await prisma.publisher.findUnique({
+      where: { name },
+      include: {
+        availabilities: true,
+      },
+    });
+
+    if (!publisher) {
+      return NextResponse.json({ message: 'Publisher not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ publisher }, { status: 200 });
+  } catch (error) {
+    console.error('Error finding publisher:', error);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  }
 }
 
 export async function PUT(request, { params }) {
-  const id = params.id;
-  const { name, password, isAdm } = await request.json();
+  const name = params.name;
+  const { name: newName, password, isAdm } = await request.json();
 
   try {
     // Verifica se o publisher existe antes de atualizá-lo
     const existingPublisher = await prisma.publisher.findUnique({
-      where: { id: parseInt(id) }
+      where: { name },
     });
 
     if (!existingPublisher) {
@@ -23,9 +42,9 @@ export async function PUT(request, { params }) {
 
     // Atualiza o publisher com os novos dados
     const updatedPublisher = await prisma.publisher.update({
-      where: { id: parseInt(id) },
+      where: { name },
       data: {
-        name: name || existingPublisher.name,
+        name: newName || existingPublisher.name,
         password: password || existingPublisher.password,
         isAdm: isAdm !== undefined ? isAdm : existingPublisher.isAdm
       }
@@ -39,11 +58,11 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, {params}) {
-  const id = params.id;
+  const name = params.name;
   try {
     // Verifica se o publisher existe antes de excluí-lo
     const existingPublisher = await prisma.publisher.findUnique({
-      where: { id: parseInt(id) }
+      where: { name },
     });
 
     if (!existingPublisher) {
@@ -52,12 +71,12 @@ export async function DELETE(request, {params}) {
 
     // Exclui o publisher
     await prisma.publisher.delete({
-      where: { id: parseInt(id) }
+      where: { name },
     });
 
     return NextResponse.json({ message: 'Publisher deleted successfully' }, { status: 200 });
   } catch (error) {
-    console.error(params.id)
+    console.error(params.name)
     console.error('Error deleting publisher:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
