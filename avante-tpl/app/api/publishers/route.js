@@ -31,8 +31,11 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Nome de usuário e senha são obrigatórios' }, { status: 400 });
     }
 
+    const hashedPassword = await hashPassword(password)
+    console.log(hashedPassword)
+
     const newPublisher = await prisma.publisher.create({
-      data: { name, password, isAdmin }
+      data: { name, password: hashedPassword, isAdmin: JSON.parse(isAdmin) }
     });
 
     // Retornar apenas informações não sensíveis

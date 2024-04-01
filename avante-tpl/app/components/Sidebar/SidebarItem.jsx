@@ -1,6 +1,6 @@
 export default function SidebarItem({ icon, text, href, isActive }) {
   const styles = isActive ? 'bg-blue-600' : '';
-
+  
   return (
     <a href={href}>
       <div className={`p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-gray-600 text-white ${styles}`}>

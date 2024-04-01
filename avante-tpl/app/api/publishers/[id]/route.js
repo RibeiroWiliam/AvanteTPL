@@ -4,12 +4,12 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET(request, { params }) {
-  const name = params.name;
+  const id = params.id;
 
   try {
     // Verifica se o publisher existe antes de atualizá-lo
     const publisher = await prisma.publisher.findUnique({
-      where: { name },
+      where: { id },
       include: {
         availabilities: true,
       },
@@ -27,13 +27,13 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
-  const name = params.name;
-  const { name: newName, password, isAdm } = await request.json();
+  const id = params.id;
+  const { name, password, isAdm } = await request.json();
 
   try {
     // Verifica se o publisher existe antes de atualizá-lo
     const existingPublisher = await prisma.publisher.findUnique({
-      where: { name },
+      where: { id },
     });
 
     if (!existingPublisher) {
@@ -42,9 +42,9 @@ export async function PUT(request, { params }) {
 
     // Atualiza o publisher com os novos dados
     const updatedPublisher = await prisma.publisher.update({
-      where: { name },
+      where: { id },
       data: {
-        name: newName || existingPublisher.name,
+        name: name || existingPublisher.name,
         password: password || existingPublisher.password,
         isAdm: isAdm !== undefined ? isAdm : existingPublisher.isAdm
       }
@@ -58,11 +58,11 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, {params}) {
-  const name = params.name;
+  const id = params.id;
   try {
     // Verifica se o publisher existe antes de excluí-lo
     const existingPublisher = await prisma.publisher.findUnique({
-      where: { name },
+      where: { id },
     });
 
     if (!existingPublisher) {
@@ -71,7 +71,7 @@ export async function DELETE(request, {params}) {
 
     // Exclui o publisher
     await prisma.publisher.delete({
-      where: { name },
+      where: { id },
     });
 
     return NextResponse.json({ message: 'Publisher deleted successfully' }, { status: 200 });

@@ -4,17 +4,18 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
 import { Availability } from "@/app/components/Availability";
-import usePublisherData from "@/app/hooks/usePublisher";
+import usePublisher from "@/app/hooks/usePublisher";
 import { useSession } from "next-auth/react";
 
 export default function Publisher() {
   const {data: session, status} = useSession()
   console.log(session)
   const { id } = useParams();
-  const { publisher, loading, error, fetchData } = usePublisherData(id);
+  const { publisher, loading, error, fetchData } = usePublisher(id);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
+  console.log(publisher)
 
   // Função para lidar com o envio do POST request
   async function addAvailability() {
@@ -24,7 +25,6 @@ export default function Publisher() {
       const selectedDate = getSelectedDate();
       const startTime = `${selectedDate} ${selectedPeriod.split(" - ")[0]}`;
       const endTime = `${selectedDate} ${selectedPeriod.split(" - ")[1]}`;
-      console.log("ok");
 
       // Fazer o POST request
       await axios.post("/api/availabilities", {

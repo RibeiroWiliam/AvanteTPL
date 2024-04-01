@@ -20,6 +20,16 @@ export default function Publishers() {
     fetchPublishers();
   }, []);
 
+  const deleteUser = async (id) => {
+    try {
+      console.log(id)
+      const response = await axios.delete(`/api/publishers/${id}`);
+      await fetchPublishers();
+    } catch (error) {
+      console.error('Erro ao deletar publicador:', error);
+    }
+  }
+
   return (
     <>
       <div className="flex justify-between mb-4">
@@ -44,6 +54,7 @@ export default function Publishers() {
             id={publisher.id}
             name={publisher.name}
             isAdmin={publisher.isAdmin}
+            deleteUser={deleteUser}
           />
         ))}
       </PublisherList.Root>
