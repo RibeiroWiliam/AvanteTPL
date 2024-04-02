@@ -22,5 +22,17 @@ export default function usePublisher(id){
     fetchPublisher();
   }, [id]);
 
-  return { publisher, loading, error };
+  const mutate = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`/api/publishers/${id}`);
+      setPublisher(response.data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { publisher, loading, error, mutate };
 };
