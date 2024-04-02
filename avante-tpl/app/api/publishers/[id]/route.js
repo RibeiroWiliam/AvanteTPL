@@ -19,7 +19,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ message: 'Publisher not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ publisher }, { status: 200 });
+    return NextResponse.json( publisher, { status: 200 });
   } catch (error) {
     console.error('Error finding publisher:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });

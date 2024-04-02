@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 export async function DELETE(request, {params}) {
   const id = params.id;
+  console.log(id)
   try {
     // Verifica se o publisher existe antes de excluí-lo
     const existingAvailability = await prisma.availability.findUnique({
