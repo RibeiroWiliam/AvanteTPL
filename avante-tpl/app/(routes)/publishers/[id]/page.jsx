@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import usePublisher from '@/app/hooks/usePublisher';
 import { Availability } from '@/app/components/Availability';
@@ -11,7 +11,7 @@ import { shifts } from '@/app/constants/shifts';
 
 export default function Publisher() {
   const { id } = useParams();
-  const { publisher, mutate } = usePublisher(id);
+  const { publisher, loading, mutate } = usePublisher(id);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [availabilityData, setAvailabilityData] = useState({
@@ -19,7 +19,11 @@ export default function Publisher() {
     startTime: '',
     endTime: '',
   });
-  const [isLoading, setIsLoading] = useState(false); // Estado para controlar o carregamento
+  const [isLoading, setIsLoading] = useState(loading); // Estado para controlar o carregamento
+
+  useEffect(() => {
+    setIsLoading(loading); 
+  }, [loading]);
 
   const openMenu = (day) => {
     setIsMenuOpen(true);
@@ -65,7 +69,7 @@ export default function Publisher() {
   return (
     <>
       <h1 className="text-3xl text-blue-700 font-bold mb-4">
-        {publisher ? publisher.name : 'Carregando...'}
+        {publisher?.name}
       </h1>
       <h2 className="text-2xl my-4 text-gray-700 font-bold ">Disponibilidades</h2>
       <Availability.Root>
