@@ -3,6 +3,16 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
+export async function GET() {
+  const availabilities = await prisma.Availability.findMany({
+    include: {
+      publisher: true,
+    },
+  });
+
+  return NextResponse.json(availabilities);
+}
+
 export async function POST(request) {
   const { startTime, endTime, publisherId } = await request.json()
   try {

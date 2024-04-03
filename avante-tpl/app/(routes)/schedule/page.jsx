@@ -1,6 +1,7 @@
 "use client";
 
 import useEquipments from "@/app/hooks/useEquipments";
+import useAvailabilities from "@/app/hooks/useAvailabilities";
 import { useEffect, useState } from "react";
 import { shifts } from "@/app/constants/shifts";
 import { weekdays } from "@/app/constants/weekdays";
