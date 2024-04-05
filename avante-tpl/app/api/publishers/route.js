@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/app/lib/prismaClient";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt"
-
-const prisma = new PrismaClient();
 
 export async function GET() {
   const publishers = await prisma.publisher.findMany();

@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/app/lib/prismaClient";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
 
 export async function GET() {
   const availabilities = await prisma.Availability.findMany({
