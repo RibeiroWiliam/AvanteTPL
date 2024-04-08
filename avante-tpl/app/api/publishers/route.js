@@ -22,7 +22,7 @@ async function hashPassword(password) {
 
 export async function POST(request) {
   try {
-    const { name, password, isAdmin } = await request.json();
+    const { name, password, isAdmin, pioneer } = await request.json();
 
     // Validar entrada
     if (!name || !password) {
@@ -33,7 +33,7 @@ export async function POST(request) {
     console.log(hashedPassword)
 
     const newPublisher = await prisma.publisher.create({
-      data: { name, password: hashedPassword, isAdmin: JSON.parse(isAdmin) }
+      data: { name, password: hashedPassword, isAdmin: JSON.parse(isAdmin), pioneer }
     });
 
     // Retornar apenas informações não sensíveis

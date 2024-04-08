@@ -48,6 +48,7 @@ export default function Publishers() {
       
       <PublisherList.Root>
         <PublisherList.Header/>
+        <tbody>
         {publishers.map((publisher) => (
           <PublisherList.Item
             key={publisher.id}
@@ -57,6 +58,7 @@ export default function Publishers() {
             deleteUser={deleteUser}
           />
         ))}
+        </tbody>
       </PublisherList.Root>
     </>
   );

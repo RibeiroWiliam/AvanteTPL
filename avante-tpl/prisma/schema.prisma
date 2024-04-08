@@ -18,11 +18,17 @@ model Publisher {
   id             String         @id @default(cuid())
   name           String         @unique
   isAdmin        Boolean        @default(false)
+  pioneer        Pioneer?
   password       String
   availabilities Availability[]
   assignments    Assignment[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+}
+
+enum Pioneer {
+  Regular
+  Auxiliar
 }
 
 model Availability {
@@ -36,15 +42,14 @@ model Availability {
 }
 
 model Assignment {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   startTime   DateTime
   endTime     DateTime
-  publisher   Publisher @relation(fields: [publisherId], references: [id])
-  publisherId String
-  equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  publishers  Publisher[]
+  equipment   Equipment   @relation(fields: [equipmentId], references: [id])
   equipmentId Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Equipment {

@@ -1,23 +1,21 @@
 "use client";
 
 import getDay from "@/app/utils/getDay";
-import { useState } from "react";
 
 export default function ScheduleMenu({
   menu,
   closeMenu,
-  assignments,
+  assignment,
   availabilities,
-  equipmentId,
-  handleSave,
 }) {
   const dayActive = () => {
+    const { day, shift } = menu;
     return new Date(
-      menu.day.getFullYear(),
-      menu.day.getMonth(),
-      menu.day.getDate(),
-      menu.shift.startTime.split(":")[0],
-      menu.shift.startTime.split(":")[1]
+      day.getFullYear(),
+      day.getMonth(),
+      day.getDate(),
+      shift.startTime.split(":")[0],
+      shift.startTime.split(":")[1]
     );
   };
 
@@ -29,43 +27,6 @@ export default function ScheduleMenu({
       menu.shift.endTime.split(":")[0],
       menu.shift.endTime.split(":")[1]
     );
-  };
-
-  const compareDateTime = (date1, date2) => {
-    return (
-      getDay(date1) === getDay(date2) && date1.getHours() === date2.getHours()
-    );
-  };
-
-  const filterAvailability = (availability) => {
-    const availabilityDate = new Date(availability.startTime);
-    const conflictingAssignment = menuAssignments.find((assignment) =>
-      compareDateTime(new Date(assignment.startTime), availabilityDate) && assignment.publisher.id === availability.publisher.id
-    );
-    return (
-      compareDateTime(availabilityDate, dayActive()) && !conflictingAssignment
-    );
-  };
-
-  const [menuAssignments, setMenuAssignments] = useState([...assignments]);
-
-  const deleteAssignment = (assignmentId) => {
-    const updatedAssignments = menuAssignments.filter(
-      (assignment) => assignment.id !== assignmentId
-    );
-    setMenuAssignments(updatedAssignments);
-  };
-
-  const addAssignment = (availability) => {
-    const newAssignment = {
-      publisherId: availability.publisher.id,
-      equipmentId: equipmentId,
-      startTime: dayActive(),
-      endTime: endTime(),
-      publisher: availability.publisher,
-      addLocally: true,
-    };
-    setMenuAssignments([...menuAssignments, newAssignment]);
   };
 
   return (
@@ -92,40 +53,32 @@ export default function ScheduleMenu({
       </div>
       <form action="">
         <ul className="p-4">
-          {menuAssignments &&
-            menuAssignments
-              .filter(
-                (assignment) =>
-                  new Date(assignment.startTime).getTime() ===
-                  dayActive().getTime()
-              )
-              .map((assignment, index) => (
-                <li key={index} className="flex gap-4">
-                  <input
-                    defaultChecked
-                    onClick={() => deleteAssignment(assignment.id)}
-                    type="checkbox"
-                  />
-                  {assignment.publisher.name}
-                </li>
-              ))}
+          {assignment &&
+            assignment.publishers.map((publisher, index) => (
+              <li key={index} className="flex gap-4">
+                <input
+                  defaultChecked
+                  type="checkbox"
+                />
+                {publisher.name}
+              </li>
+            ))}
           {availabilities &&
             availabilities
-              .filter((availability) => filterAvailability(availability))
-              .map((availability) => (
+              .map(availability => (
                 <li key={availability.id} className="flex gap-4">
                   <input
                     type="checkbox"
-                    onClick={() => addAssignment(availability)}
                   />
                   {availability.publisher.name}
                 </li>
               ))}
+          {(assignment && assignment.publishers.length === 0) ||
+          (!assignment && availabilities && availabilities.length === 0) && (
+          <div className="text-center w-full text-gray-400">Não há publicadores disponíveis.</div>
+        )}
         </ul>
-        <button
-          onClick={handleSave}
-          className="w-full rounded-lg bg-blue-600 text-white p-2 px-4 hover:bg-blue-500 transition cursor"
-        >
+        <button className="w-full rounded-lg bg-blue-600 text-white p-2 px-4 hover:bg-blue-500 transition cursor">
           Salvar
         </button>
       </form>

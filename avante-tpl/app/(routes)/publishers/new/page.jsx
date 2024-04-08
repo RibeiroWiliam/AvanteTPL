@@ -14,7 +14,7 @@ export default function NewPublisher() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData)
+    console.log(formData);
 
     try {
       const response = await axios.post("/api/publishers", formData);
@@ -28,7 +28,7 @@ export default function NewPublisher() {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -57,11 +57,30 @@ export default function NewPublisher() {
         <label className="mr-2" htmlFor="isAdm">
           É Administrador?
         </label>
-        <select name="isAdmin" id="isAdmin" onChange={handleChange} defaultValue={false} className="p-2 bg-white border-2 border-gray-200 focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+        <select
+          name="isAdmin"
+          id="isAdmin"
+          onChange={handleChange}
+          defaultValue={false}
+          className="p-2 bg-white border-2 border-gray-200 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+        >
           <option value={true}>Sim</option>
-          <option value={false}>
-            Não
-          </option>
+          <option value={false}>Não</option>
+        </select>
+
+        <label className="ml-4 mr-2" htmlFor="isAdm">
+          É Pioneiro?
+        </label>
+        <select
+          name="pioneer"
+          id="isAdmin"
+          onChange={handleChange}
+          defaultValue={false}
+          className="p-2 bg-white border-2 border-gray-200 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+        >
+          <option value={"Regular"}>Pioneiro Regular</option>
+          <option value={"Auxiliar"}>Pioneiro Auxiliar</option>
+          <option value={null}>Não</option>
         </select>
 
         <button
