@@ -16,12 +16,16 @@ export default function Schedule() {
   const { data: session } = useSession();
   const { equipments } = useEquipments();
   const { availabilities } = useAvailabilities();
-  const { assignments, loading: assignmentsLoading } = useAssignments();
+  const { assignments, setAssignments, loading: assignmentsLoading } = useAssignments();
+  console.log(assignments)
   const [activeEquipment, setActiveEquipment] = useState(0);
   const [activeWeek, setActiveWeek] = useState(new Date());
   const [menu, setMenu] = useState({
     isOpen: false,
     position: { x: 0, y: 0 },
+    startTime: new Date(),
+    endTime: new Date(),
+    assignment: null,
   });
 
   useEffect(() => {
@@ -35,38 +39,67 @@ export default function Schedule() {
   }, []);
 
   const openMenu = useCallback((day, shift, buttonRect) => {
+    const startTime = new Date(
+      day.getFullYear(),
+      day.getMonth(),
+      day.getDate(),
+      shift.startTime.split(":")[0],
+      shift.startTime.split(":")[1]
+    );
+
+    const endTime = new Date(
+      day.getFullYear(),
+      day.getMonth(),
+      day.getDate(),
+      shift.endTime.split(":")[0],
+      shift.endTime.split(":")[1]
+    );
+
     setMenu((prevMenu) => ({
       ...prevMenu,
       isOpen: true,
       position: { x: buttonRect.left, y: buttonRect.top },
-      day: day,
-      shift: shift,
+      startTime,
+      endTime,
+      assignment: assignments.find(
+        (assignment) =>
+          new Date(assignment.startTime).getTime() === startTime.getTime() &&
+          assignment.equipmentId === activeEquipment
+      ) ? assignments.find(
+        (assignment) =>
+          new Date(assignment.startTime).getTime() === startTime.getTime() &&
+          assignment.equipmentId === activeEquipment
+      ) :
+      {
+        id: assignments[assignments.length - 1].id + 1,
+        startTime,
+        endTime,
+        equipmentId: activeEquipment,
+        publishers: [],
+        addLocally: true
+      },
     }));
-  }, []);
+  }, [assignments]);
 
   const closeMenu = useCallback(() => {
     setMenu((prevMenu) => ({ ...prevMenu, isOpen: false }));
   }, []);
 
-  const filterAssignments = day => {   
+  const filterAssignments = (day) => {
     const filteredAssignments = assignments.filter((assignment) => {
       const assignmentDate = new Date(assignment.startTime);
-      return assignmentDate.getDate() === day.getDate() && assignment.equipmentId === activeEquipment;
+      return (
+        assignmentDate.getDate() === day.getDate() &&
+        assignment.equipmentId === activeEquipment
+      );
     });
     return filteredAssignments;
   };
 
-  const filterAvailabilities = (day, startTime) => {
-    const date = new Date(
-      day.getFullYear(),
-      day.getMonth(),
-      day.getDate(),
-      startTime.split(":")[0],
-      startTime.split(":")[1]
-    );   
+  const filterAvailabilities = (startTime, assignment) => {
     const filteredAvailabilities = availabilities.filter((availability) => {
-      const availabilityDate = new Date(availability.startTime)
-      return compareDateTime(availabilityDate, date)
+      const availabilityDate = new Date(availability.startTime);
+      return compareDateTime(availabilityDate, startTime) && !assignment.publishers.find(publisher => publisher.id === availability.publisher.id);
     });
     return filteredAvailabilities;
   };
@@ -76,6 +109,24 @@ export default function Schedule() {
       getDay(date1) === getDay(date2) && date1.getHours() === date2.getHours()
     );
   };
+
+  const saveChanges = (modifiedAssignment) => {
+    const foundAssignmentIndex = assignments.findIndex(assignment => assignment.id === modifiedAssignment.id);
+  
+    if (foundAssignmentIndex !== -1) {
+      if(!assignments[foundAssignmentIndex].addLocally){
+        modifiedAssignment.modifiedLocally = true
+      }
+
+      const updatedAssignments = [...assignments];
+      updatedAssignments[foundAssignmentIndex] = modifiedAssignment;
+      setAssignments(updatedAssignments);
+    } else {
+      setAssignments(prevAssignments => [...prevAssignments, modifiedAssignment]);
+    }
+    
+    closeMenu();
+  };  
 
   return (
     <>
@@ -93,6 +144,9 @@ export default function Schedule() {
           />
           <button>
             <i className="bi bi-floppy text-blue-600 text-3xl"></i>
+          </button>
+          <button>
+            <i className="bi bi-people text-blue-600 text-3xl"></i>
           </button>
           <button>
             <i className="bi bi-printer text-blue-600 text-3xl"></i>
@@ -132,7 +186,8 @@ export default function Schedule() {
         <ScheduleMenu
           menu={menu}
           closeMenu={closeMenu}
-          availabilities={filterAvailabilities(menu.day, menu.shift.startTime)}
+          availabilities={filterAvailabilities(menu.startTime, menu.assignment)}
+          saveChanges={saveChanges}
         />
       )}
 

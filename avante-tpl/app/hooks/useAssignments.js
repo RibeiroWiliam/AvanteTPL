@@ -22,5 +22,5 @@ export default function useAssignments() {
     fetchAssignments();
   }, []);
 
-  return { assignments, loading, error };
+  return { assignments, setAssignments, loading, error };
 }
