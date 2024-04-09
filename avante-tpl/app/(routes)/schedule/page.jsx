@@ -11,9 +11,12 @@ import getWeekDays from "@/app/utils/getWeekDays";
 import Loading from "@/app/components/Shared/Loading";
 import { useSession } from "next-auth/react";
 import getDay from "@/app/utils/getDay";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Schedule() {
   const { data: session } = useSession();
+  const router = useRouter()
   const { equipments } = useEquipments();
   const { availabilities } = useAvailabilities();
   const { assignments, setAssignments, loading: assignmentsLoading } = useAssignments();
@@ -126,7 +129,38 @@ export default function Schedule() {
     }
     
     closeMenu();
-  };  
+  };
+  
+  const saveSchedule = async () => {
+    const newAssignments = assignments.filter(assignment => assignment.addLocally).map(assignment => {
+      const {startTime, endTime, publishers, equipmentId} = assignment
+      const publisherIds = publishers.map(publisher => publisher.id) 
+      return {
+        startTime,
+        endTime,
+        publisherIds,
+        equipmentId
+      }
+    })
+    const modifiedAssignments = assignments.filter(assignment => assignment.modifiedLocally).map(assignment => {
+      const {id, startTime, endTime, publishers, equipmentId} = assignment
+      const publisherIds = publishers.map(publisher => publisher.id) 
+      return {
+        id,
+        startTime,
+        endTime,
+        publisherIds,
+        equipmentId
+      }
+    })
+    try{
+      await axios.post("/api/assignments",newAssignments)
+      await axios.put("/api/assignments",modifiedAssignments)
+      router.refresh()
+    }catch(error){
+      console.error(error)
+    }   
+  }
 
   return (
     <>
@@ -142,7 +176,7 @@ export default function Schedule() {
             selectedWeek={activeWeek}
             onWeekChange={handleWeekChange}
           />
-          <button>
+          <button onClick={() => saveSchedule()}>
             <i className="bi bi-floppy text-blue-600 text-3xl"></i>
           </button>
           <button>

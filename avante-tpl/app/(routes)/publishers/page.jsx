@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function Publishers() {
   const [publishers, setPublishers] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("Todos");
 
   useEffect(() => {
     async function fetchPublishers() {
@@ -30,31 +31,72 @@ export default function Publishers() {
     }
   }
 
+  const filters = ["Todos", "Pioneiros", "Administradores"]
+
+  const applyFilter = (publishers, filter) => {
+    switch (filter) {
+      case "Pioneiros":
+        return publishers.filter(
+          (publisher) =>
+            publisher.pioneer
+        );
+      case "Administradores":
+          return publishers.filter(
+            (publisher) =>
+              publisher.isAdmin
+        );
+      default:
+        return publishers;
+    }
+  };
+
   return (
     <>
-      <div className="flex justify-between mb-4">
-        <h1 className="text-3xl text-indigo-700 font-bold">Publicadores</h1>
-        <a
-          href="/publishers/new"
-          className="rounded-lg bg-indigo-600 text-white p-2 px-4 hover:bg-indigo-500 transition cursor"
-        >
-          Novo Publicador
-        </a>
+      {/* Header */}
+      <div className="flex justify-between">
+        {/* Title */}
+        <h1 className="text-3xl text-blue-700 font-bold mb-4">
+          Publicadores
+        </h1>
+        {/* Date Picker and Actions */}
+        <div className="flex gap-4">
+          <a href="/publishers/new">
+            <i className="bi bi-person-add text-blue-600 text-3xl"></i>
+          </a>
+        </div>
       </div>
-      <div className="flex relative mb-6 mt-4 focus:border-blue-400">
-      <label htmlFor="query" className="text-center absolute text-lg p-2 px-4"><i className="bi bi-search"></i></label>
-      <input type="search" name="query" id="query" placeholder="Pesquise um publicador" className="w-full outline-none p-2 border-2 border-gray-100 rounded-lg pl-12 focus:border-blue-500"/>
+      <div className="flex bg-gray-100 p-2 px-4 gap-4 w-full rounded-lg my-4">
+        <i className="bi bi-search text-gray-400"></i>
+        <input
+          className="outline-none bg-gray-100 w-full"
+          type="text"
+          placeholder="Nome do publicador..."
+        />
       </div>
+
+      {/* Filter Buttons */}
+      {filters &&
+        filters.map((filter, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveFilter(filter)}
+            className={`${
+              activeFilter === filter
+                ? "text-blue-700 border-b-2 border-blue-700"
+                : "text-gray-300 hover:text-blue-700"
+            } font-bold px-4 py-2`}
+          >
+            {filter}
+          </button>
+        ))}
       
       <PublisherList.Root>
         <PublisherList.Header/>
         <tbody>
-        {publishers.map((publisher) => (
+        {publishers && applyFilter(publishers, activeFilter).map((publisher) => (
           <PublisherList.Item
             key={publisher.id}
-            id={publisher.id}
-            name={publisher.name}
-            isAdmin={publisher.isAdmin}
+            publisher={publisher}
             deleteUser={deleteUser}
           />
         ))}
