@@ -137,7 +137,7 @@ export default function NewPublisher() {
         </section>
         <section>
           <div className="flex gap-4 items-center">
-            {/* <h2 className="text-2xl text-gray-700 font-bold ">
+            <h2 className="text-2xl text-gray-700 font-bold ">
               Disponibilidades
             </h2>
             <button
@@ -150,7 +150,7 @@ export default function NewPublisher() {
           </div>
           {formData.availabilities.map((availability) => (
             <Availability.Card></Availability.Card>
-          ))} */}
+          ))}
         </section>
         <button
           type="submit"
