@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import getDay from "@/app/utils/getDay";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Title from "@/app/components/Shared/Title";
 
 export default function Schedule() {
   const { data: session } = useSession();
@@ -167,9 +168,7 @@ export default function Schedule() {
       {/* Header */}
       <div className="flex justify-between">
         {/* Title */}
-        <h1 className="text-3xl text-blue-700 font-bold mb-4">
-          Programação TPL - Aruana
-        </h1>
+        <Title>Programação TPL - Aruana</Title>
         {/* Date Picker and Actions */}
         <div className="flex gap-4">
           <WeeklyDatePicker

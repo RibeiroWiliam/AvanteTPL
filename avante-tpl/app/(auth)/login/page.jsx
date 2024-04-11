@@ -12,8 +12,12 @@ export default function Login() {
   });
   const loginUser = async (e) => {
     e.preventDefault();
+    const trimmedName = data.name.trim();
+    const trimmedPassword = data.password.trim();
+
     signIn("credentials", {
-      ...data,
+      name: trimmedName,
+      password: trimmedPassword,
       redirect: false,
     });
     router.push("/dashboard");
@@ -47,7 +51,9 @@ export default function Login() {
                   name="name"
                   type="text"
                   value={data.name}
-                  onChange={(e) => {setData({...data, name: e.target.value})}}
+                  onChange={(e) => {
+                    setData({ ...data, name: e.target.value });
+                  }}
                   required
                   className="block w-full px-4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -63,12 +69,6 @@ export default function Login() {
                   Senha
                 </label>
                 <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                  >
-                    Esqueceu a senha?
-                  </a>
                 </div>
               </div>
               <div className="mt-2">
@@ -78,7 +78,9 @@ export default function Login() {
                   type="password"
                   value={data.password}
                   autoComplete="current-password"
-                  onChange={(e) => {setData({...data, password: e.target.value})}}
+                  onChange={(e) => {
+                    setData({ ...data, password: e.target.value });
+                  }}
                   required
                   className="block px-4 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />

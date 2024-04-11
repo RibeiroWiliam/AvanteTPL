@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }) {
         <div className="my-4 bg-gray-600 h-[1px]"></div>
         <Sidebar.Footer logoutUser={logoutUser}/>
       </Sidebar.Root>
-      <main className={`pr-4 ${isSidebarOpen ? "pl-[325px]" : "pl-0"}`}>
+      <main className={`mt-12 lg:pr-4 ${isSidebarOpen ? "lg:pl-[325px]" : "pl-0"}`}>
         {children}
       </main>
     </>
