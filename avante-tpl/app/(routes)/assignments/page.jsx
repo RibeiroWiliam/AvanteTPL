@@ -120,7 +120,7 @@ export default function Assignments() {
             const startTime = new Date(assignment.startTime);
             const endTime = new Date(assignment.endTime);
             return (
-              <div className="shadow-lg bg-blue-600 text-white p-4 rounded-lg">
+              <div className="shadow-lg bg-blue-600 text-white p-4 rounded-lg" key={assignment.id}>
                 <h2 className="font-bold text-lg">{`${getDay(
                   assignment.startTime
                 )} - ${startTime.getDate()} de ${getMonth(startTime)}`}</h2>

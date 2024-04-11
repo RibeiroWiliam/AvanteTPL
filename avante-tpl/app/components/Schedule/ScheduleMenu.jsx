@@ -19,7 +19,7 @@ export default function ScheduleMenu({
     if(assignment){
       setCheckedPublishers(assignment.publishers)
     }    
-  }, [])
+  }, [assignment])
 
   const handleCheckboxChange = (event, publisher) => {
     const { id } = publisher;

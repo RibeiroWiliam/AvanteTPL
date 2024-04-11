@@ -82,7 +82,7 @@ export default function Schedule() {
         addLocally: true
       },
     }));
-  }, [assignments]);
+  }, [assignments, activeEquipment]);
 
   const closeMenu = useCallback(() => {
     setMenu((prevMenu) => ({ ...prevMenu, isOpen: false }));
