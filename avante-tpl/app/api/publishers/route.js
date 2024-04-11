@@ -33,7 +33,7 @@ export async function POST(request) {
     console.log(hashedPassword)
 
     const newPublisher = await prisma.publisher.create({
-      data: { name, password: hashedPassword, isAdmin: JSON.parse(isAdmin), pioneer }
+      data: { name, password: hashedPassword, isAdmin: JSON.parse(isAdmin), pioneer: pioneer ? pioneer : null}
     });
 
     // Retornar apenas informações não sensíveis

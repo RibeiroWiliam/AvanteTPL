@@ -8,6 +8,7 @@ import getDay from '@/app/utils/getDay';
 import axios from 'axios';
 import { weekdays } from '@/app/constants/weekdays';
 import { shifts } from '@/app/constants/shifts';
+import Loading from '@/app/components/Shared/Loading';
 
 export default function Publisher() {
   const { id } = useParams();
@@ -130,7 +131,7 @@ export default function Publisher() {
           </ul>
         </div>
       )}
-      {isLoading && <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-200 opacity-50 z-50 flex items-center justify-center">Carregando...</div>}
+      {isLoading && <Loading/>}
     </>
   );
 }
