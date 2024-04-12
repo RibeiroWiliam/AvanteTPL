@@ -1,49 +1,60 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import usePublisher from '@/app/hooks/usePublisher';
-import { Availability } from '@/app/components/Availability';
-import getDay from '@/app/utils/getDay';
-import axios from 'axios';
-import { weekdays } from '@/app/constants/weekdays';
-import { shifts } from '@/app/constants/shifts';
-import Loading from '@/app/components/Shared/Loading';
-import { useSession } from 'next-auth/react';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import usePublisher from "@/app/hooks/usePublisher";
+import { Availability } from "@/app/components/Availability";
+import getDay from "@/app/utils/getDay";
+import axios from "axios";
+import { weekdays } from "@/app/constants/weekdays";
+import { shifts } from "@/app/constants/shifts";
+import Loading from "@/app/components/Shared/Loading";
+import { useSession } from "next-auth/react";
 
 export default function Publisher() {
   const { id } = useParams();
   const { publisher, loading, mutate } = usePublisher(id);
-  const { data: session } = useSession()
-  const router = useRouter()
+  const { data: session } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    if(!session.user.isAdmin || session.user.id === id){
-      router.push("/dashboard")
-    }   
-  }, [router, session, id])
+    if (
+      (session && session.user.isAdmin === false) ||
+      (session && session.user.id !== id)
+    ) {
+      router.push("/dashboard");
+    }
+  }, [router, session, id]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [availabilityData, setAvailabilityData] = useState({
     publisherId: id,
-    startTime: '',
-    endTime: '',
+    startTime: "",
+    endTime: "",
   });
   const [isLoading, setIsLoading] = useState(loading); // Estado para controlar o carregamento
 
   useEffect(() => {
-    setIsLoading(loading); 
+    setIsLoading(loading);
   }, [loading]);
 
   const openMenu = (day) => {
     setIsMenuOpen(true);
-    setAvailabilityData({ ...availabilityData, startTime: day.data, endTime: day.data });
+    setAvailabilityData({
+      ...availabilityData,
+      startTime: day.data,
+      endTime: day.data,
+    });
   };
 
   const addAvailability = async (shift) => {
     setIsLoading(true); // Inicia o carregamento
-    const startTime = new Date(availabilityData.startTime + ' ' + shift.startTime).toISOString();
-    const endTime = new Date(availabilityData.endTime + ' ' + shift.endTime).toISOString();
+    const startTime = new Date(
+      availabilityData.startTime + " " + shift.startTime
+    ).toISOString();
+    const endTime = new Date(
+      availabilityData.endTime + " " + shift.endTime
+    ).toISOString();
 
     const availability = {
       ...availabilityData,
@@ -52,12 +63,12 @@ export default function Publisher() {
     };
     try {
       setIsMenuOpen(false);
-      const response = await axios.post('/api/availabilities', availability);
-      setAvailabilityData({ ...availabilityData, startTime: '', endTime: '' });
-      console.log('Availability created:', response.data);
+      const response = await axios.post("/api/availabilities", availability);
+      setAvailabilityData({ ...availabilityData, startTime: "", endTime: "" });
+      console.log("Availability created:", response.data);
       mutate();
     } catch (error) {
-      console.error('Error creating availability:', error);
+      console.error("Error creating availability:", error);
     } finally {
       setIsLoading(false); // Finaliza o carregamento
     }
@@ -67,10 +78,10 @@ export default function Publisher() {
     setIsLoading(true); // Inicia o carregamento
     try {
       await axios.delete(`/api/availabilities/${id}`);
-      console.log('Availability deleted successfully.');
+      console.log("Availability deleted successfully.");
       mutate();
     } catch (error) {
-      console.error('Error deleting availability:', error);
+      console.error("Error deleting availability:", error);
     } finally {
       setIsLoading(false); // Finaliza o carregamento
     }
@@ -81,7 +92,9 @@ export default function Publisher() {
       <h1 className="text-3xl text-blue-700 font-bold mb-4">
         {publisher?.name}
       </h1>
-      <h2 className="text-2xl my-4 text-gray-700 font-bold ">Disponibilidades</h2>
+      <h2 className="text-2xl my-4 text-gray-700 font-bold ">
+        Disponibilidades
+      </h2>
       <Availability.Root>
         {weekdays.map((day, index) => (
           <div key={index}>
@@ -89,14 +102,28 @@ export default function Publisher() {
             <Availability.Grid>
               {publisher &&
                 publisher.availabilities
-                  .filter((availability) => getDay(availability.startTime) === getDay(day.data))
+                  .filter(
+                    (availability) =>
+                      getDay(availability.startTime) === getDay(day.data)
+                  )
                   .map((availability) => {
                     const startTime = new Date(availability.startTime);
                     const endTime = new Date(availability.endTime);
-                    const startHours = String(startTime.getHours()).padStart(2, '0');
-                    const endHours = String(endTime.getHours()).padStart(2, '0');
-                    const startMinutes = String(startTime.getMinutes()).padStart(2, '0');
-                    const endMinutes = String(endTime.getMinutes()).padStart(2, '0');
+                    const startHours = String(startTime.getHours()).padStart(
+                      2,
+                      "0"
+                    );
+                    const endHours = String(endTime.getHours()).padStart(
+                      2,
+                      "0"
+                    );
+                    const startMinutes = String(
+                      startTime.getMinutes()
+                    ).padStart(2, "0");
+                    const endMinutes = String(endTime.getMinutes()).padStart(
+                      2,
+                      "0"
+                    );
                     return (
                       <Availability.Card
                         color="bg-blue-600"
@@ -125,8 +152,12 @@ export default function Publisher() {
           >
             <i className="bi bi-x-lg"></i>
           </button>
-          <h3 className="text-lg text-gray-900 font-semibold mb-2">Selecionar período</h3>
-          <h4 className="text-blue-800 py-2">{getDay(availabilityData.startTime)}</h4>
+          <h3 className="text-lg text-gray-900 font-semibold mb-2">
+            Selecionar período
+          </h3>
+          <h4 className="text-blue-800 py-2">
+            {getDay(availabilityData.startTime)}
+          </h4>
           <ul className="space-y-2">
             {shifts.map((shift) => (
               <li
@@ -140,7 +171,7 @@ export default function Publisher() {
           </ul>
         </div>
       )}
-      {isLoading && <Loading/>}
+      {isLoading && <Loading />}
     </>
   );
 }
