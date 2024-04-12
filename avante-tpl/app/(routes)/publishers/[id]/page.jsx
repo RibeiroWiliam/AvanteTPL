@@ -19,7 +19,7 @@ export default function Publisher() {
 
   useEffect(() => {
     if (
-      (session && session.user.isAdmin === false) ||
+      (session && session.user.isAdmin === false) &&
       (session && session.user.id !== id)
     ) {
       router.push("/dashboard");
