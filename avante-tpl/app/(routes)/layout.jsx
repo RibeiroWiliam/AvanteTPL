@@ -12,10 +12,10 @@ export default function DashboardLayout({ children }) {
 
   const router = useRouter()
   useEffect(() => {
-    if(status !== 'authenticated'){
+    if(status !== 'loading' && status !== 'authenticated'){
       router.push("/login")
     }   
-  }, [router])
+  }, [router, status])
 
   function toggleSidebar() {
     setIsSidebarOpen(!isSidebarOpen);

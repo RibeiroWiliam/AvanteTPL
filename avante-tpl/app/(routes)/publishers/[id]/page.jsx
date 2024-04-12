@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import usePublisher from '@/app/hooks/usePublisher';
 import { Availability } from '@/app/components/Availability';
 import getDay from '@/app/utils/getDay';
@@ -9,10 +9,19 @@ import axios from 'axios';
 import { weekdays } from '@/app/constants/weekdays';
 import { shifts } from '@/app/constants/shifts';
 import Loading from '@/app/components/Shared/Loading';
+import { useSession } from 'next-auth/react';
 
 export default function Publisher() {
   const { id } = useParams();
   const { publisher, loading, mutate } = usePublisher(id);
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if(!session.user.isAdmin || session.user.id === id){
+      router.push("/dashboard")
+    }   
+  }, [router, session, id])
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [availabilityData, setAvailabilityData] = useState({

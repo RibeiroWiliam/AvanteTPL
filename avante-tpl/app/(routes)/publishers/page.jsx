@@ -3,10 +3,20 @@
 import { PublisherList } from "@/app/components/PublisherList";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Publishers() {
   const [publishers, setPublishers] = useState([]);
   const [activeFilter, setActiveFilter] = useState("Todos");
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if(!session.user.isAdmin){
+      router.push("/dashboard")
+    }   
+  }, [router, session])
 
   useEffect(() => {
     async function fetchPublishers() {
@@ -23,9 +33,9 @@ export default function Publishers() {
 
   const deleteUser = async (id) => {
     try {
-      console.log(id)
       const response = await axios.delete(`/api/publishers/${id}`);
-      await fetchPublishers();
+      const updatedPublishers = publishers.filter(publisher => publisher.id !== id)
+      setPublishers(updatedPublishers)
     } catch (error) {
       console.error('Erro ao deletar publicador:', error);
     }
