@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { useMediaQuery } from "react-responsive";
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const isLargeScreen = useMediaQuery({ query: '(min-width: 1024px)' });
 
   const router = useRouter()
   useEffect(() => {
@@ -16,6 +18,10 @@ export default function DashboardLayout({ children }) {
       router.push("/login")
     }   
   }, [router, status])
+
+  useEffect(() => {
+    setIsSidebarOpen(isLargeScreen);
+  }, [isLargeScreen]);
 
   function toggleSidebar() {
     setIsSidebarOpen(!isSidebarOpen);
@@ -35,6 +41,7 @@ export default function DashboardLayout({ children }) {
           <Sidebar.User
             user={session.user.name}
             isAdmin={session.user.isAdmin}
+            pioneer={session.user.pioneer}
           />
         )}
         <div className="my-4 bg-gray-600 h-[1px]"></div>

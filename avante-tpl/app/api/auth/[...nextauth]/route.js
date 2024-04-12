@@ -45,7 +45,7 @@ export const authOptions = {
     async jwt({ token, user, session }) {
       if(user){
         return {
-          ...token, id: user.id, isAdmin: user.isAdmin
+          ...token, id: user.id, isAdmin: user.isAdmin, pioneer: user.pioneer ? user.pioneer : null
         }
       }
       return token
@@ -56,7 +56,8 @@ export const authOptions = {
         user: {
           ...session.user,
           id: token.id,
-          isAdmin: token.isAdmin
+          isAdmin: token.isAdmin,
+          pioneer: token.pioneer
         }
       }
     }

@@ -13,7 +13,7 @@ export default function Publishers() {
   const router = useRouter()
 
   useEffect(() => {
-    if(!session.user.isAdmin){
+    if(session && !session.user.isAdmin){
       router.push("/dashboard")
     }   
   }, [router, session])

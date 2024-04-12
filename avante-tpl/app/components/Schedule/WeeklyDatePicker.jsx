@@ -1,21 +1,28 @@
-"use client"
+"use client";
 
-import { startOfWeek, endOfWeek, addWeeks, format, isSameMonth } from 'date-fns';
+import {
+  startOfWeek,
+  endOfWeek,
+  addWeeks,
+  format,
+  isSameMonth,
+} from "date-fns";
 
-export default function WeeklyDatePicker({selectedWeek, onWeekChange}){
+export default function WeeklyDatePicker({ selectedWeek, onWeekChange }) {
   const handleWeekChange = (event) => {
-    const selectedWeekNumber = parseInt(event.target.value);
+    const selectedWeekNumber = parseInt(event.target.value) + 1;
     const newDate = addWeeks(startOfWeek(new Date()), selectedWeekNumber - 1);
-    onWeekChange(newDate); // Chamando a função de callback passada pelo pai
+    onWeekChange(newDate);
   };
+  
 
   const generateLabel = (start, end) => {
-    const startDay = format(start, 'd');
-    const endDay = format(end, 'd');
-    const startMonth = format(start, 'MMM');
-    const endMonth = format(end, 'MMM');
+    const startDay = format(start, "d");
+    const endDay = format(end, "d");
+    const startMonth = format(start, "MMM");
+    const endMonth = format(end, "MMM");
     const sameMonth = isSameMonth(start, end);
-    
+
     if (sameMonth) {
       return `${startDay}-${endDay} de ${startMonth}`;
     } else {
@@ -34,7 +41,7 @@ export default function WeeklyDatePicker({selectedWeek, onWeekChange}){
 
   return (
     <div className="flex gap-4 items-center">
-      <select onChange={handleWeekChange} className="bg-white text-xl">
+      <select onChange={handleWeekChange} className="bg-white lg:text-xl">
         {weeks.map((week, index) => (
           <option key={index} value={index}>
             {week.label}
@@ -42,9 +49,8 @@ export default function WeeklyDatePicker({selectedWeek, onWeekChange}){
         ))}
       </select>
       <button>
-              <i className="bi bi-calendar4-week text-blue-600 text-3xl"></i>
+        <i className="bi bi-calendar4-week text-blue-600 text-2xl lg:text-3xl"></i>
       </button>
     </div>
   );
-};
-
+}

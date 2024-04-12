@@ -14,6 +14,7 @@ import getDay from "@/app/utils/getDay";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Title from "@/app/components/Shared/Title";
+import ActionButton from "@/app/components/Shared/ActionButton";
 
 export default function Schedule() {
   const { data: session } = useSession();
@@ -21,7 +22,8 @@ export default function Schedule() {
   const { equipments } = useEquipments();
   const { availabilities } = useAvailabilities();
   const { assignments, setAssignments, loading: assignmentsLoading } = useAssignments();
-  console.log(assignments)
+  const [isLoading, setIsLoading] = useState(false);
+
   const [activeEquipment, setActiveEquipment] = useState(0);
   const [activeWeek, setActiveWeek] = useState(new Date());
   const [menu, setMenu] = useState({
@@ -38,9 +40,13 @@ export default function Schedule() {
     }
   }, [equipments]);
 
-  const handleWeekChange = useCallback((newWeek) => {
+  useEffect(() => {
+    setIsLoading(assignmentsLoading);
+  }, [assignmentsLoading]);
+
+  const handleWeekChange = (newWeek) => {
     setActiveWeek(newWeek);
-  }, []);
+  };
 
   const openMenu = useCallback((day, shift, buttonRect) => {
     const startTime = new Date(
@@ -75,7 +81,7 @@ export default function Schedule() {
           assignment.equipmentId === activeEquipment
       ) :
       {
-        id: assignments[assignments.length - 1].id + 1,
+        id: assignments.length ? assignments[assignments.length - 1].id + 1 : 1,
         startTime,
         endTime,
         equipmentId: activeEquipment,
@@ -157,8 +163,11 @@ export default function Schedule() {
     try{
       await axios.post("/api/assignments",newAssignments)
       await axios.put("/api/assignments",modifiedAssignments)
+      setIsLoading(true)
       router.refresh()
+      setIsLoading(false)
     }catch(error){
+      setIsLoading(false)
       console.error(error)
     }   
   }
@@ -166,24 +175,18 @@ export default function Schedule() {
   return (
     <>
       {/* Header */}
-      <div className="flex justify-between">
+      <div className="flex flex-wrap justify-between mb-4 items-center">
         {/* Title */}
         <Title>Programação TPL - Aruana</Title>
         {/* Date Picker and Actions */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           <WeeklyDatePicker
             selectedWeek={activeWeek}
             onWeekChange={handleWeekChange}
           />
-          <button onClick={() => saveSchedule()}>
-            <i className="bi bi-floppy text-blue-600 text-3xl"></i>
-          </button>
-          <button>
-            <i className="bi bi-people text-blue-600 text-3xl"></i>
-          </button>
-          <button>
-            <i className="bi bi-printer text-blue-600 text-3xl"></i>
-          </button>
+          <ActionButton action={() => saveSchedule()} icon="bi bi-floppy"/>
+          <ActionButton action={() => console.log("View Users")} icon="bi bi-people"/>
+          <ActionButton action={() => console.log("Print Schedule")} icon="bi bi-printer"/>
         </div>
       </div>
 
@@ -202,8 +205,9 @@ export default function Schedule() {
             {equipment.name}
           </button>
         ))}
-
+      
       {/* Schedule Grid */}
+      <section className="flex flex-col gap-4">
       {assignments &&
         getWeekDays(activeWeek).map((day, index) => (
           <ScheduleTable
@@ -213,6 +217,9 @@ export default function Schedule() {
             openMenu={openMenu}
           />
         ))}
+      </section>
+      
+      
 
       {/* Menu */}
       {session?.user.isAdmin && menu.isOpen && (
@@ -225,7 +232,7 @@ export default function Schedule() {
       )}
 
       {/* Loading Indicator */}
-      {assignmentsLoading && <Loading />}
+      {isLoading && <Loading />}
     </>
   );
 }

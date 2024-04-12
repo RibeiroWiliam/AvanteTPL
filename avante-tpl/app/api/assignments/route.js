@@ -96,7 +96,7 @@ export async function PUT(request) {
               publishers: {
                 connectOrCreate: {
                   where: { id: publisherId },
-                  create: { id: publisherId }, // Supondo que o editor já exista na tabela publishers
+                  create: { id: publisherId }
                 },
               },
             },
@@ -126,4 +126,10 @@ export async function PUT(request) {
       { status: 500 }
     );
   }
+}
+
+export async function DELETE() {
+  const assignments = await prisma.assignment.deleteMany();
+
+  return NextResponse.json(assignments);
 }
