@@ -10,17 +10,26 @@ export default function Login() {
     name: "",
     password: "",
   });
+  const [error, setError] = useState("");
+  console.log(error)
   const loginUser = async (e) => {
     e.preventDefault();
     const trimmedName = data.name.trim();
     const trimmedPassword = data.password.trim();
-
-    signIn("credentials", {
-      name: trimmedName,
-      password: trimmedPassword,
-      redirect: false,
-    });
-    router.push("/dashboard");
+    try {
+      const result = await signIn("credentials", {
+        name: trimmedName,
+        password: trimmedPassword,
+        redirect: false,
+      });
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (e) {
+      setError(e.message);
+    }
   };
   return (
     <main>
@@ -68,8 +77,7 @@ export default function Login() {
                 >
                   Senha
                 </label>
-                <div className="text-sm">
-                </div>
+                <div className="text-sm"></div>
               </div>
               <div className="mt-2">
                 <input
@@ -96,6 +104,7 @@ export default function Login() {
               </button>
             </div>
           </form>
+          {error && <div className="bg-red-300 p-2 mt-4 flex gap-2 text-lg text-red-900"><i className="bi bi-x-circle"></i> {error}</div>}
         </div>
       </div>
     </main>

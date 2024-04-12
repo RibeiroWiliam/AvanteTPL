@@ -149,7 +149,7 @@ export default function NewPublisher() {
             </button>
           </div>
           {formData.availabilities.map((availability) => (
-            <Availability.Card></Availability.Card>
+            <Availability.Card key={availability.startTime}></Availability.Card>
           ))}
         </section>
         <button

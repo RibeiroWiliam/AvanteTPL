@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { data: session, status } = useSession();
   const pathname = usePathname();
+
+  const router = useRouter()
+  useEffect(() => {
+    if(status !== 'authenticated'){
+      router.push("/login")
+    }   
+  }, [router])
 
   function toggleSidebar() {
     setIsSidebarOpen(!isSidebarOpen);

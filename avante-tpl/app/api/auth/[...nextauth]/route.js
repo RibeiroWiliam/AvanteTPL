@@ -15,7 +15,7 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials.name || !credentials.password) {
-          return null;
+          throw new Error("Por favor, forneça um nome de usuário e senha.");
         }
         console.log(credentials);
         const publisher = await prisma.publisher.findFirst({
@@ -25,13 +25,13 @@ export const authOptions = {
         });
 
         if (!publisher) {
-          return null;
+          throw new Error("Usuário não encontrado.");
         }
 
         const passwordsMatch = await bcrypt.compare(credentials.password, publisher.password)
 
         if (!passwordsMatch) {
-          return null;
+          throw new Error("Senha incorreta.");
         }
 
         return publisher;
