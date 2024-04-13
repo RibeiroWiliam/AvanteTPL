@@ -26,7 +26,8 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const id = params.id;
-  const { name, password, isAdm } = await request.json();
+  const { name, password, isAdmin, pioneer } = await request.json();
+  console.log(isAdmin)
 
   try {
     // Verifica se o publisher existe antes de atualizá-lo
@@ -44,7 +45,8 @@ export async function PUT(request, { params }) {
       data: {
         name: name || existingPublisher.name,
         password: password || existingPublisher.password,
-        isAdm: isAdm !== undefined ? isAdm : existingPublisher.isAdm
+        isAdmin: isAdmin !== undefined ? isAdmin : existingPublisher.isAdmin,
+        pioneer: pioneer !== undefined ? pioneer : existingPublisher.pioneer
       }
     });
 

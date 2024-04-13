@@ -94,10 +94,7 @@ export async function PUT(request) {
             },
             data: {
               publishers: {
-                connectOrCreate: {
-                  where: { id: publisherId },
-                  create: { id: publisherId }
-                },
+                connect: { id: publisherId },
               },
             },
           })

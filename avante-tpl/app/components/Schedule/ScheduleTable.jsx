@@ -1,6 +1,7 @@
 import { shifts } from "@/app/constants/shifts";
 import getDay from "../../utils/getDay";
 import { useState } from "react";
+import getMonth from "@/app/utils/getMonth";
 
 const getCellDate = (day, shift) => {
   return new Date(
@@ -41,7 +42,7 @@ export default function ScheduleTable({ day, assignments, openMenu }) {
               <button className="absolute right-4 hover:text-gray-300"><i className="bi bi-chevron-down"></i></button>
             )}
             
-            {getDay(day)}
+            {getDay(day)} - {day.getDate()} de {getMonth(day)}
           </th>
         </tr>
         {expanded && (
