@@ -15,13 +15,21 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Title from "@/app/components/Shared/Title";
 import ActionButton from "@/app/components/Shared/ActionButton";
+import SchedulePDF from "@/app/lib/SchedulePDF";
+import PrintButton from "@/app/components/Schedule/PrintButton";
+import { shifts } from "@/app/constants/shifts";
+import getMonth from "@/app/utils/getMonth";
 
 export default function Schedule() {
   const { data: session } = useSession();
-  const router = useRouter()
+  const router = useRouter();
   const { equipments } = useEquipments();
   const { availabilities } = useAvailabilities();
-  const { assignments, setAssignments, loading: assignmentsLoading } = useAssignments();
+  const {
+    assignments,
+    setAssignments,
+    loading: assignmentsLoading,
+  } = useAssignments();
   const [isLoading, setIsLoading] = useState(false);
 
   const [activeEquipment, setActiveEquipment] = useState(0);
@@ -48,48 +56,55 @@ export default function Schedule() {
     setActiveWeek(newWeek);
   };
 
-  const openMenu = useCallback((day, shift, buttonRect) => {
-    const startTime = new Date(
-      day.getFullYear(),
-      day.getMonth(),
-      day.getDate(),
-      shift.startTime.split(":")[0],
-      shift.startTime.split(":")[1]
-    );
+  const openMenu = useCallback(
+    (day, shift, buttonRect) => {
+      const startTime = new Date(
+        day.getFullYear(),
+        day.getMonth(),
+        day.getDate(),
+        shift.startTime.split(":")[0],
+        shift.startTime.split(":")[1]
+      );
 
-    const endTime = new Date(
-      day.getFullYear(),
-      day.getMonth(),
-      day.getDate(),
-      shift.endTime.split(":")[0],
-      shift.endTime.split(":")[1]
-    );
+      const endTime = new Date(
+        day.getFullYear(),
+        day.getMonth(),
+        day.getDate(),
+        shift.endTime.split(":")[0],
+        shift.endTime.split(":")[1]
+      );
 
-    setMenu((prevMenu) => ({
-      ...prevMenu,
-      isOpen: true,
-      position: { x: buttonRect.left, y: buttonRect.top },
-      startTime,
-      endTime,
-      assignment: assignments.find(
-        (assignment) =>
-          new Date(assignment.startTime).getTime() === startTime.getTime() &&
-          assignment.equipmentId === activeEquipment
-      ) ? assignments.find(
-        (assignment) =>
-          new Date(assignment.startTime).getTime() === startTime.getTime() &&
-          assignment.equipmentId === activeEquipment
-      ) :
-      {
-        id: assignments.length ? assignments[assignments.length - 1].id + 1 : 1,
+      setMenu((prevMenu) => ({
+        ...prevMenu,
+        isOpen: true,
+        position: { x: buttonRect.left, y: buttonRect.top },
         startTime,
         endTime,
-        equipmentId: activeEquipment,
-        publishers: [],
-        addLocally: true
-      },
-    }));
-  }, [assignments, activeEquipment]);
+        assignment: assignments.find(
+          (assignment) =>
+            new Date(assignment.startTime).getTime() === startTime.getTime() &&
+            assignment.equipmentId === activeEquipment
+        )
+          ? assignments.find(
+              (assignment) =>
+                new Date(assignment.startTime).getTime() ===
+                  startTime.getTime() &&
+                assignment.equipmentId === activeEquipment
+            )
+          : {
+              id: assignments.length
+                ? assignments[assignments.length - 1].id + 1
+                : 1,
+              startTime,
+              endTime,
+              equipmentId: activeEquipment,
+              publishers: [],
+              addLocally: true,
+            },
+      }));
+    },
+    [assignments, activeEquipment]
+  );
 
   const closeMenu = useCallback(() => {
     setMenu((prevMenu) => ({ ...prevMenu, isOpen: false }));
@@ -109,7 +124,12 @@ export default function Schedule() {
   const filterAvailabilities = (startTime, assignment) => {
     const filteredAvailabilities = availabilities.filter((availability) => {
       const availabilityDate = new Date(availability.startTime);
-      return compareDateTime(availabilityDate, startTime) && !assignment.publishers.find(publisher => publisher.id === availability.publisher.id);
+      return (
+        compareDateTime(availabilityDate, startTime) &&
+        !assignment.publishers.find(
+          (publisher) => publisher.id === availability.publisher.id
+        )
+      );
     });
     return filteredAvailabilities;
   };
@@ -121,56 +141,117 @@ export default function Schedule() {
   };
 
   const saveChanges = (modifiedAssignment) => {
-    const foundAssignmentIndex = assignments.findIndex(assignment => assignment.id === modifiedAssignment.id);
-  
+    const foundAssignmentIndex = assignments.findIndex(
+      (assignment) => assignment.id === modifiedAssignment.id
+    );
+
     if (foundAssignmentIndex !== -1) {
-      if(!assignments[foundAssignmentIndex].addLocally){
-        modifiedAssignment.modifiedLocally = true
+      if (!assignments[foundAssignmentIndex].addLocally) {
+        modifiedAssignment.modifiedLocally = true;
       }
 
       const updatedAssignments = [...assignments];
       updatedAssignments[foundAssignmentIndex] = modifiedAssignment;
       setAssignments(updatedAssignments);
     } else {
-      setAssignments(prevAssignments => [...prevAssignments, modifiedAssignment]);
+      setAssignments((prevAssignments) => [
+        ...prevAssignments,
+        modifiedAssignment,
+      ]);
     }
-    
+
     closeMenu();
   };
-  
+
   const saveSchedule = async () => {
-    const newAssignments = assignments.filter(assignment => assignment.addLocally).map(assignment => {
-      const {startTime, endTime, publishers, equipmentId} = assignment
-      const publisherIds = publishers.map(publisher => publisher.id) 
-      return {
-        startTime,
-        endTime,
-        publisherIds,
-        equipmentId
-      }
-    })
-    const modifiedAssignments = assignments.filter(assignment => assignment.modifiedLocally).map(assignment => {
-      const {id, startTime, endTime, publishers, equipmentId} = assignment
-      const publisherIds = publishers.map(publisher => publisher.id) 
-      return {
-        id,
-        startTime,
-        endTime,
-        publisherIds,
-        equipmentId
-      }
-    })
-    try{
-      await axios.post("/api/assignments",newAssignments)
-      await axios.put("/api/assignments",modifiedAssignments)
-      setIsLoading(true)
-      router.refresh()
-      setIsLoading(false)
-    }catch(error){
-      setIsLoading(false)
-      console.error(error)
-    }   
-  }
+    const newAssignments = assignments
+      .filter((assignment) => assignment.addLocally)
+      .map((assignment) => {
+        const { startTime, endTime, publishers, equipmentId } = assignment;
+        const publisherIds = publishers.map((publisher) => publisher.id);
+        return {
+          startTime,
+          endTime,
+          publisherIds,
+          equipmentId,
+        };
+      });
+    const modifiedAssignments = assignments
+      .filter((assignment) => assignment.modifiedLocally)
+      .map((assignment) => {
+        const { id, startTime, endTime, publishers, equipmentId } = assignment;
+        const publisherIds = publishers.map((publisher) => publisher.id);
+        return {
+          id,
+          startTime,
+          endTime,
+          publisherIds,
+          equipmentId,
+        };
+      });
+    try {
+      await axios.post("/api/assignments", newAssignments);
+      await axios.put("/api/assignments", modifiedAssignments);
+      setIsLoading(true);
+      router.refresh();
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.error(error);
+    }
+  };
+
+  const colors = [
+    { title: "text-blue-800", day: "bg-blue-800" },
+    { title: "text-red-800", day: "bg-red-800" },
+    { title: "text-purple-800", day: "bg-purple-800" },
+  ];
+
+  const findPublishers = (day, shift, equipmentId) => {
+    const date = new Date(
+      day.getFullYear(),
+      day.getMonth(),
+      day.getDate(),
+      shift.startTime.split(":")[0],
+      shift.startTime.split(":")[1]
+    );
+
+    const foundAssignment = assignments?.find(
+      (assignment) =>
+        new Date(assignment.startTime).getTime() === date.getTime() &&
+        assignment.equipmentId === equipmentId
+    )
+
+    const publishers = foundAssignment?.publishers.map(publisher => publisher.name)
+
+    return publishers ? publishers : []
+  };
+
+  const shiftsData = (day, equipmentId) => (
+    shifts.map((shift) => ({
+      period: shift.label,
+      color: shift.color,
+      publishers: findPublishers(day, shift, equipmentId),
+    }))
+  );
+
+  const daysData = (equipmentId) => (
+    getWeekDays(activeWeek).map((day) => ({
+      text: `${getDay(day)} - ${day.getDate()} de ${getMonth(day)}`,
+      shifts: shiftsData(day, equipmentId),
+    }))
+  );
+
+  const getData = () => { 
+    if(equipments && assignments){
+      return equipments.map((equipment) => ({
+          title: `Programação TPL - ${equipment.name}`,
+          color: colors[equipment.id - 1],
+          days: daysData(equipment.id),
+        }))
+    }
+    return []
+  };
 
   return (
     <>
@@ -184,9 +265,12 @@ export default function Schedule() {
             selectedWeek={activeWeek}
             onWeekChange={handleWeekChange}
           />
-          <ActionButton action={() => saveSchedule()} icon="bi bi-floppy"/>
-          <ActionButton action={() => console.log("View Users")} icon="bi bi-people"/>
-          <ActionButton action={() => console.log("Print Schedule")} icon="bi bi-printer"/>
+          <ActionButton action={() => saveSchedule()} icon="bi bi-floppy" />
+          <ActionButton
+            action={() => console.log("View Users")}
+            icon="bi bi-people"
+          />
+          {getData() && <PrintButton document={<SchedulePDF data={getData()}/>} />}
         </div>
       </div>
 
@@ -205,21 +289,19 @@ export default function Schedule() {
             {equipment.name}
           </button>
         ))}
-      
+
       {/* Schedule Grid */}
       <section className="flex flex-col gap-4">
-      {assignments &&
-        getWeekDays(activeWeek).map((day, index) => (
-          <ScheduleTable
-            key={index}
-            day={day}
-            assignments={filterAssignments(day)}
-            openMenu={openMenu}
-          />
-        ))}
+        {assignments &&
+          getWeekDays(activeWeek).map((day, index) => (
+            <ScheduleTable
+              key={index}
+              day={day}
+              assignments={filterAssignments(day)}
+              openMenu={openMenu}
+            />
+          ))}
       </section>
-      
-      
 
       {/* Menu */}
       {session?.user.isAdmin && menu.isOpen && (

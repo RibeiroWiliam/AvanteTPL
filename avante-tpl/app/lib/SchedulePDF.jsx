@@ -1,81 +1,70 @@
-"use client"
+"use client";
 
-import { PDFViewer, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import { Page, Text, View, Document } from "@react-pdf/renderer";
+import { createTw } from "react-pdf-tailwind";
 
-// Definindo estilos
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: 'column',
-    padding: 20,
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1,
-  },
-  header: {
-    fontSize: 24,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  table: {
-    display: 'table',
-    width: 'auto',
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
-  },
-  tableRow: {
-    margin: 'auto',
-    flexDirection: 'row',
-  },
-  tableCell: {
-    margin: 'auto',
-    marginVertical: 5,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
+const tw = createTw({
+  theme: {
+    fontFamily: {
+      sans: ["Comic Sans"],
+    },
   },
 });
 
 // Componente PDF
 const MyDocument = ({ data }) => (
   <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.section}>
-        <Text style={styles.header}>Programação TPL - Aruana</Text>
-        {data.map((day, index) => (
-          <View key={index}>
-            <Text style={styles.header}>{day.label}</Text>
-            <View style={styles.table}>
+    {data.map((page, pageIndex) => (
+      <Page
+        key={pageIndex}
+        size="A4"
+        style={tw("flex flex-col text-center items-center justify-center p-4 gap-4")}
+      >
+        <View>
+          <Text style={tw(`${page.color.title} text-2xl font-bold`)}>
+            {page.title}
+          </Text>
+        </View>
+        {page.days && page.days.map((day, index) => (
+          <View key={index} style={tw("w-full border border-gray-200")}>
+            <View
+              style={tw(
+                `${page.color.day} text-white font-bold text-base p-2 pb-0 w-full text-center`
+              )}
+            >
+              <Text>{day.text}</Text>
+            </View>
+            <View style={tw("flex flex-row w-full")}>
               {day.shifts.map((shift, shiftIndex) => (
-                <View key={shiftIndex} style={styles.tableRow}>
-                  {shift.map((person, personIndex) => (
-                    <View key={personIndex} style={styles.tableCell}>
-                      <Text>{person}</Text>
-                    </View>
-                  ))}
+                <View key={shiftIndex} style={tw("text-sm w-full")}>
+                  <View                    
+                    style={tw(`${shift.color} text-white text-center p-2`)}
+                  >
+                    <Text style={tw("text-center")}>{shift.period}</Text>
+                  </View>
+                  <View
+                    key={shiftIndex}
+                    style={tw(
+                      "flex flex-col gap-2 text-center justify-center p-2"
+                    )}
+                  >
+                    {shift.publishers.map((publisher, publisherIndex) => (
+                      <Text key={publisherIndex} style={tw("text-center text-xs")}>{publisher || ""}</Text>
+                    ))}
+                  </View>
                 </View>
               ))}
             </View>
           </View>
         ))}
-      </View>
-    </Page>
+      </Page>
+    ))}
   </Document>
 );
 
-export default function SchedulePDF() {
-  const data = [
-    { label: 'Monday', shifts: [['Person A', 'Person B'], ['Person C', 'Person D']] },
-    { label: 'Tuesday', shifts: [['Person E', 'Person F'], ['Person G', 'Person H']] },
-    // Adicione mais dias conforme necessário
-  ];
-  return (
-    <PDFViewer style={{ width: '100%', height: '100vh' }}>
-      <MyDocument data={data} />
-    </PDFViewer>
-  )
+export default function SchedulePDF({ data }) {
+  if(data){
+    return <MyDocument data={data} />;
+  }
+  return null
 }
