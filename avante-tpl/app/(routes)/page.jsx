@@ -9,6 +9,7 @@ export default function Home() {
     router.push("/login")
   }, [router])  
   return (
-    <div></div>
+    <>
+    </>
   )
 }

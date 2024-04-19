@@ -10,7 +10,7 @@ const roboto = Roboto({
 
 export const metadata = {
   title: "AvanteTPL",
-  description: "O gerenciador do testemunho publico que voce precisa!",
+  description: "O gerenciador do testemunho publico que voce precisa!"
 };
 
 export default function RootLayout({ children }) {

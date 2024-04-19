@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from 'react';
+import Logo from '../Shared/Logo';
 
 export default function SidebarHeader({toggleSidebar}){
 
   return(
 <div className="text-gray-100 text-xl">
         <div className="p-2.5 mt-1 flex items-center">
-          <i className="bi bi-app-indicator px-2 py-1 rounded-md bg-blue-600"></i>
-          <h1 className="font-bold text-gray-200 text-[15px] ml-3">AvanteTPL</h1>
+          <Logo/>
           <i
             className="bi bi-x cursor-pointer ml-28 lg:hidden"
             onClick={toggleSidebar}
