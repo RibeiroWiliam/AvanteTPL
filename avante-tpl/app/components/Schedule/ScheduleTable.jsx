@@ -2,16 +2,7 @@ import { shifts } from "@/app/constants/shifts";
 import getDay from "../../utils/getDay";
 import { useState } from "react";
 import getMonth from "@/app/utils/getMonth";
-
-const getCellDate = (day, shift) => {
-  return new Date(
-    day.getFullYear(),
-    day.getMonth(),
-    day.getDate(),
-    shift.startTime.split(":")[0],
-    shift.startTime.split(":")[1]
-  );
-};
+import { getShiftDate } from "@/app/utils/getShiftDate";
 
 export default function ScheduleTable({ day, assignments, openMenu }) {
   const [expanded, setExpanded] = useState(false);
@@ -21,13 +12,13 @@ export default function ScheduleTable({ day, assignments, openMenu }) {
   };
 
   const compareDateTime = (assignment, shift) => {
-    const cellDate = getCellDate(day, shift);
+    const cellDate = getShiftDate(day, shift);
     const assignmentDate = new Date(assignment.startTime);
     return assignmentDate.getTime() === cellDate.getTime();
   };
 
   return (
-    <table className="table-auto border-collapse my-4 w-full text-center">
+    <table className="table-auto border-collapse my-4 text-center">
       <thead>
         <tr>
           <th
@@ -65,7 +56,7 @@ export default function ScheduleTable({ day, assignments, openMenu }) {
         <tbody>
           <tr>
             {shifts.map((shift, shiftIndex) => (
-              <td key={shiftIndex} className="px-4 py-2 border">
+              <td key={shiftIndex} className="px-4 py-2 border bg-white">
                 {assignments.length > 0 &&
                 assignments.find((assignment) => {
                   return (

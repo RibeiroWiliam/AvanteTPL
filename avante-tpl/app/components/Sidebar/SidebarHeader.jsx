@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from 'react';
-import Logo from '../Shared/Logo';
+import Logo from "../Shared/Logo";
 
-export default function SidebarHeader({toggleSidebar}){
-
-  return(
-<div className="text-gray-100 text-xl">
-        <div className="p-2.5 mt-1 flex items-center">
-          <Logo/>
-          <i
-            className="bi bi-x cursor-pointer ml-28 lg:hidden"
-            onClick={toggleSidebar}
-          ></i>
-        </div>
-        <div className="my-2 bg-gray-600 h-[1px]"></div>
+export default function SidebarHeader({ toggleSidebar }) {
+  return (
+    <>
+      <div className="p-2.5 mt-1 flex pr-4 justify-between">
+        <Logo />
+        <button
+          className="lg:hidden cursor-pointer text-white"
+          onClick={toggleSidebar}
+        >
+          <i className="bi bi-x-lg"></i>
+        </button>
       </div>
-  )
+      <div className="my-2 bg-gray-600 h-[1px]"></div>
+    </>
+  );
 }

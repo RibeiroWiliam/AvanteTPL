@@ -5,19 +5,20 @@ import { Sidebar } from "../components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useMediaQuery } from "react-responsive";
+import Logo from "../components/Shared/Logo";
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  const isLargeScreen = useMediaQuery({ query: '(min-width: 1024px)' });
+  const isLargeScreen = useMediaQuery({ query: "(min-width: 1024px)" });
 
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
-    if(status !== 'loading' && status !== 'authenticated'){
-      router.push("/login")
-    }   
-  }, [router, status])
+    if (status !== "loading" && status !== "authenticated") {
+      router.push("/login");
+    }
+  }, [router, status]);
 
   useEffect(() => {
     setIsSidebarOpen(isLargeScreen);
@@ -27,16 +28,15 @@ export default function DashboardLayout({ children }) {
     setIsSidebarOpen(!isSidebarOpen);
   }
 
-  function logoutUser(){
-    console.log("ok")
-    signOut({ callbackUrl: '/login' })
+  function logoutUser() {
+    console.log("ok");
+    signOut({ callbackUrl: "/login" });
   }
 
   return (
-    <>
-      <Sidebar.Toggler toggleSidebar={toggleSidebar} />
+    <div className="w-full h-full grid grid-cols-1 lg:grid-cols-12">
       <Sidebar.Root isOpen={isSidebarOpen}>
-        <Sidebar.Header toggleSidebar={toggleSidebar} />
+        <Sidebar.Header toggleSidebar={toggleSidebar}/>
         {session && (
           <Sidebar.User
             user={session.user.name}
@@ -73,18 +73,29 @@ export default function DashboardLayout({ children }) {
         />
         {session?.user.isAdmin && (
           <Sidebar.Item
-          icon="bi bi-people-fill"
-          text="Publicadores"
-          href="/publishers"
-          isActive={pathname === "/publishers"}
-        />
-        )}       
+            icon="bi bi-people-fill"
+            text="Publicadores"
+            href="/publishers"
+            isActive={pathname === "/publishers"}
+          />
+        )}
         <div className="my-4 bg-gray-600 h-[1px]"></div>
-        <Sidebar.Footer logoutUser={logoutUser}/>
+        <Sidebar.Footer logoutUser={logoutUser} />
       </Sidebar.Root>
-      <main className={`${isSidebarOpen ? "lg:pl-[325px]" : "pl-0"} h-[84vh] sm:p-6 mt-12 lg:pr-6`}>
+      <header className="w-full col-span-8 xl:col-span-9 p-4 flex justify-between">
+        <Logo theme="light" />
+        <div className="flex items-center gap-3">
+        <button className="text-gray-700 hover:text-blue-700 transition text-3xl cursor-pointer">
+        <i className="bi bi-gear-fill"></i>
+        </button>
+        <Sidebar.Toggler toggleSidebar={toggleSidebar} />
+        </div>      
+      </header>
+      <main
+        className={`p-4 col-span-8 xl:col-span-9 overflow-y-scroll`}
+      >
         {children}
       </main>
-    </>
+    </div>
   );
 }

@@ -12,8 +12,8 @@ const PDFDownloadLink = dynamic(
 
 export default function PrintButton({document}) {
   return (
-    <PDFDownloadLink className="text-blue-600 text-2xl lg:text-3xl" fileName="Programacao.pdf" document={document}>
-      <i className="bi bi-printer"></i>
+    <PDFDownloadLink className="text-gray-600 hover:text-blue-600 transition text-2xl lg:text-3xl" fileName="Programacao.pdf" document={document}>
+      <i className="bi bi-printer-fill"></i>
     </PDFDownloadLink>
   )
 }

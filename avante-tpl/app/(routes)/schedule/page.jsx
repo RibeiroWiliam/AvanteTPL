@@ -17,8 +17,9 @@ import SchedulePDF from "@/app/lib/SchedulePDF";
 import PrintButton from "@/app/components/Schedule/PrintButton";
 import { getPDFData } from "./printPDF";
 import { saveSchedule } from "./actions";
-import { useRouter } from "next/navigation";
 import FlashMessage from "@/app/components/Shared/FlashMessage";
+import { getShiftDate } from "@/app/utils/getShiftDate";
+import { useRouter } from 'next/navigation';
 
 export default function Schedule() {
   const { data: session } = useSession();
@@ -31,7 +32,7 @@ export default function Schedule() {
     loading: assignmentsLoading,
   } = useAssignments();
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const [activeEquipment, setActiveEquipment] = useState(0);
   const [activeWeek, setActiveWeek] = useState(new Date());
   const [menu, setMenu] = useState({
@@ -62,21 +63,8 @@ export default function Schedule() {
 
   const openMenu = useCallback(
     (day, shift, buttonRect) => {
-      const startTime = new Date(
-        day.getFullYear(),
-        day.getMonth(),
-        day.getDate(),
-        shift.startTime.split(":")[0],
-        shift.startTime.split(":")[1]
-      );
-
-      const endTime = new Date(
-        day.getFullYear(),
-        day.getMonth(),
-        day.getDate(),
-        shift.endTime.split(":")[0],
-        shift.endTime.split(":")[1]
-      );
+      const startTime = getShiftDate(day, shift)
+      const endTime = getShiftDate(day, shift, "endTime")
 
       setMenu((prevMenu) => ({
         ...prevMenu,
@@ -175,25 +163,24 @@ export default function Schedule() {
       isOpen: true,
       content: response
     })
-    console.log(message)
+    router.refresh();
   };
 
   return (
     <>
       {/* Header */}
-      <div className="flex flex-wrap justify-between mb-4 items-center">
+      <div className="flex flex-wrap justify-center sm:justify-between mb-4 gap-4 items-center">
         {/* Title */}
         <Title>Programação TPL - Aruana</Title>
         {/* Date Picker and Actions */}
         <div className="flex gap-4 items-center">
           <WeeklyDatePicker
-            selectedWeek={activeWeek}
             onWeekChange={handleWeekChange}
           />
-          <ActionButton action={handleSave} icon="bi bi-floppy" />
+          <ActionButton action={handleSave} icon="bi bi-floppy-fill" />
           <ActionButton
             action={() => console.log("View Users")}
-            icon="bi bi-people"
+            icon="bi bi-people-fill"
           />
           {getPDFData(equipments, assignments, activeWeek) && (
             <PrintButton
@@ -224,7 +211,7 @@ export default function Schedule() {
         ))}
 
       {/* Schedule Grid */}
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-4 overflow-x-scroll">
         {assignments &&
           getWeekDays(activeWeek).map((day, index) => (
             <ScheduleTable

@@ -10,7 +10,7 @@ import {
   isSameMonth,
 } from "date-fns";
 
-export default function WeeklyDatePicker({ selectedWeek, onWeekChange }) {
+export default function WeeklyDatePicker({ onWeekChange }) {
   const generateLabel = (start, end) => {
     const startDay = format(start, "d");
     const endDay = format(end, "d");
@@ -27,7 +27,7 @@ export default function WeeklyDatePicker({ selectedWeek, onWeekChange }) {
 
   const weeks = [];
   const currentWeek = startOfWeek(new Date());
-  for (let i = 0; i <= 8; i++) {
+  for (let i = -2; i <= 4; i++) {
     const weekStart = addWeeks(currentWeek, i);
     const weekEnd = endOfWeek(weekStart);
     const label = generateLabel(weekStart, weekEnd);
@@ -42,9 +42,11 @@ export default function WeeklyDatePicker({ selectedWeek, onWeekChange }) {
   return (
     <div className="flex gap-4 items-center">
       <Select
+      id="week-picker"
+      instanceId="week-picker"
       defaultValue = {
         options.filter(option => 
-           option.value === 0)
+           option.value === 2)
       }
       options={options}
       onChange={(selectedOption) => {

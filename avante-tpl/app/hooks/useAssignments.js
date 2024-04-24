@@ -7,6 +7,8 @@ export default function useAssignments() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    fetchAssignments();
+
     async function fetchAssignments(){
       try {
         setLoading(true);
@@ -18,8 +20,6 @@ export default function useAssignments() {
         setLoading(false);
       }
     };
-
-    fetchAssignments();
   }, []);
 
   return { assignments, setAssignments, loading, error };

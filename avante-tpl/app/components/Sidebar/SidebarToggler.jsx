@@ -1,10 +1,10 @@
 export default function SidebarToggler({toggleSidebar}) {
   return (
     <button
-      className="lg:hidden fixed text-gray-900 text-4xl top-2 left-4 cursor-pointer"
+      className="text-gray-900 hover:text-blue-700 transition text-4xl cursor-pointer"
       onClick={toggleSidebar}
     >
-      <i className="bi bi-list px-2 rounded-md"></i>
+      <i className="bi bi-list rounded-md"></i>
     </button>
   )
 }
