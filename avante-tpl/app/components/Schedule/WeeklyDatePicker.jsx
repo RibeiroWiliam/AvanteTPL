@@ -1,5 +1,7 @@
 "use client";
 
+import Select from 'react-select'
+import getMonth from "@/app/utils/getMonth";
 import {
   startOfWeek,
   endOfWeek,
@@ -9,18 +11,11 @@ import {
 } from "date-fns";
 
 export default function WeeklyDatePicker({ selectedWeek, onWeekChange }) {
-  const handleWeekChange = (event) => {
-    const selectedWeekNumber = parseInt(event.target.value) + 1;
-    const newDate = addWeeks(startOfWeek(new Date()), selectedWeekNumber - 1);
-    onWeekChange(newDate);
-  };
-  
-
   const generateLabel = (start, end) => {
     const startDay = format(start, "d");
     const endDay = format(end, "d");
-    const startMonth = format(start, "MMM");
-    const endMonth = format(end, "MMM");
+    const startMonth = getMonth(start)
+    const endMonth = getMonth(end)
     const sameMonth = isSameMonth(start, end);
 
     if (sameMonth) {
@@ -39,18 +34,25 @@ export default function WeeklyDatePicker({ selectedWeek, onWeekChange }) {
     weeks.push({ start: weekStart, end: weekEnd, label });
   }
 
+  const options = weeks.map((week, index) => ({
+    value: index,
+    label: week.label
+  }))
+
   return (
     <div className="flex gap-4 items-center">
-      <select onChange={handleWeekChange} className="bg-white lg:text-xl">
-        {weeks.map((week, index) => (
-          <option key={index} value={index}>
-            {week.label}
-          </option>
-        ))}
-      </select>
-      <button>
-        <i className="bi bi-calendar4-week text-blue-600 text-2xl lg:text-3xl"></i>
-      </button>
+      <Select
+      defaultValue = {
+        options.filter(option => 
+           option.value === 0)
+      }
+      options={options}
+      onChange={(selectedOption) => {
+        const selectedWeekNumber = parseInt(selectedOption.value) + 1;
+        const newDate = addWeeks(startOfWeek(new Date()), selectedWeekNumber - 1);
+        onWeekChange(newDate);
+      }}
+    />
     </div>
   );
 }

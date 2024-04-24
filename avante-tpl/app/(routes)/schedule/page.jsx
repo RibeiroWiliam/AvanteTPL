@@ -11,14 +11,14 @@ import getWeekDays from "@/app/utils/getWeekDays";
 import Loading from "@/app/components/Shared/Loading";
 import { useSession } from "next-auth/react";
 import getDay from "@/app/utils/getDay";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import Title from "@/app/components/Shared/Title";
 import ActionButton from "@/app/components/Shared/ActionButton";
 import SchedulePDF from "@/app/lib/SchedulePDF";
 import PrintButton from "@/app/components/Schedule/PrintButton";
-import { shifts } from "@/app/constants/shifts";
-import getMonth from "@/app/utils/getMonth";
+import { getPDFData } from "./printPDF";
+import { saveSchedule } from "./actions";
+import { useRouter } from "next/navigation";
+import FlashMessage from "@/app/components/Shared/FlashMessage";
 
 export default function Schedule() {
   const { data: session } = useSession();
@@ -40,6 +40,10 @@ export default function Schedule() {
     startTime: new Date(),
     endTime: new Date(),
     assignment: null,
+  });
+  const [message, setMessage] = useState({
+    isOpen: false,
+    content: {},
   });
 
   useEffect(() => {
@@ -163,94 +167,15 @@ export default function Schedule() {
     closeMenu();
   };
 
-  const saveSchedule = async () => {
-    const newAssignments = assignments
-      .filter((assignment) => assignment.addLocally)
-      .map((assignment) => {
-        const { startTime, endTime, publishers, equipmentId } = assignment;
-        const publisherIds = publishers.map((publisher) => publisher.id);
-        return {
-          startTime,
-          endTime,
-          publisherIds,
-          equipmentId,
-        };
-      });
-    const modifiedAssignments = assignments
-      .filter((assignment) => assignment.modifiedLocally)
-      .map((assignment) => {
-        const { id, startTime, endTime, publishers, equipmentId } = assignment;
-        const publisherIds = publishers.map((publisher) => publisher.id);
-        return {
-          id,
-          startTime,
-          endTime,
-          publisherIds,
-          equipmentId,
-        };
-      });
-    try {
-      await axios.post("/api/assignments", newAssignments);
-      await axios.put("/api/assignments", modifiedAssignments);
-      setIsLoading(true);
-      router.refresh();
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error);
-    }
-  };
-
-  const colors = [
-    { title: "text-blue-800", day: "bg-blue-800" },
-    { title: "text-red-800", day: "bg-red-800" },
-    { title: "text-purple-800", day: "bg-purple-800" },
-  ];
-
-  const findPublishers = (day, shift, equipmentId) => {
-    const date = new Date(
-      day.getFullYear(),
-      day.getMonth(),
-      day.getDate(),
-      shift.startTime.split(":")[0],
-      shift.startTime.split(":")[1]
-    );
-
-    const foundAssignment = assignments?.find(
-      (assignment) =>
-        new Date(assignment.startTime).getTime() === date.getTime() &&
-        assignment.equipmentId === equipmentId
-    )
-
-    const publishers = foundAssignment?.publishers.map(publisher => publisher.name)
-
-    return publishers ? publishers : []
-  };
-
-  const shiftsData = (day, equipmentId) => (
-    shifts.map((shift) => ({
-      period: shift.label,
-      color: shift.color,
-      publishers: findPublishers(day, shift, equipmentId),
-    }))
-  );
-
-  const daysData = (equipmentId) => (
-    getWeekDays(activeWeek).map((day) => ({
-      text: `${getDay(day)} - ${day.getDate()} de ${getMonth(day)}`,
-      shifts: shiftsData(day, equipmentId),
-    }))
-  );
-
-  const getData = () => { 
-    if(equipments && assignments){
-      return equipments.map((equipment) => ({
-          title: `Programação TPL - ${equipment.name}`,
-          color: colors[equipment.id - 1],
-          days: daysData(equipment.id),
-        }))
-    }
-    return []
+  const handleSave = async () => {
+    setIsLoading(true);
+    const response = await saveSchedule(assignments);
+    setIsLoading(false);
+    setMessage({
+      isOpen: true,
+      content: response
+    })
+    console.log(message)
   };
 
   return (
@@ -265,12 +190,20 @@ export default function Schedule() {
             selectedWeek={activeWeek}
             onWeekChange={handleWeekChange}
           />
-          <ActionButton action={() => saveSchedule()} icon="bi bi-floppy" />
+          <ActionButton action={handleSave} icon="bi bi-floppy" />
           <ActionButton
             action={() => console.log("View Users")}
             icon="bi bi-people"
           />
-          {getData() && <PrintButton document={<SchedulePDF data={getData()}/>} />}
+          {getPDFData(equipments, assignments, activeWeek) && (
+            <PrintButton
+              document={
+                <SchedulePDF
+                  data={getPDFData(equipments, assignments, activeWeek)}
+                />
+              }
+            />
+          )}
         </div>
       </div>
 
@@ -310,6 +243,14 @@ export default function Schedule() {
           closeMenu={closeMenu}
           availabilities={filterAvailabilities(menu.startTime, menu.assignment)}
           saveChanges={saveChanges}
+        />
+      )}
+
+      {/* Flash Message */}
+      {message.isOpen && (
+        <FlashMessage
+          message={message.content}
+          closeMessage={() => setMessage({ ...message, isOpen: false })}
         />
       )}
 
