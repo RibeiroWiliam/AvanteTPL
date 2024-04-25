@@ -23,6 +23,20 @@ import { useRouter } from "next/navigation";
 import usePublishers from "@/app/hooks/usePublishers";
 import UsersMenu from "@/app/components/Schedule/UsersMenu";
 
+const compareDateTime = (date1, date2) => {
+  return (
+    getDay(date1) === getDay(date2) && date1.getHours() === date2.getHours()
+  );
+};
+
+const findAssignment = (publisherId, date, assignments) => {
+  return assignments.find(
+    assignment =>
+      compareDateTime(date, new Date(assignment.startTime)) &&
+      assignment.publishers.find(publisher => publisher.id === publisherId)
+  );
+};
+
 export default function Schedule() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -122,17 +136,18 @@ export default function Schedule() {
         compareDateTime(availabilityDate, startTime) &&
         !assignment.publishers.find(
           (publisher) => publisher.id === availability.publisher.id
+        ) &&
+        !findAssignment(
+          availability.publisher.id,
+          availabilityDate,
+          assignments
         )
       );
     });
     return filteredAvailabilities;
   };
 
-  const compareDateTime = (date1, date2) => {
-    return (
-      getDay(date1) === getDay(date2) && date1.getHours() === date2.getHours()
-    );
-  };
+  
 
   const saveChanges = (modifiedAssignment) => {
     const foundAssignmentIndex = assignments.findIndex(
@@ -237,7 +252,11 @@ export default function Schedule() {
 
       {/* Users Menu */}
       {usersMenu && (
-        <UsersMenu assignments={assignments} publishers={publishers} closeMenu={() => setUsersMenu(false)}/>
+        <UsersMenu
+          assignments={assignments}
+          publishers={publishers}
+          closeMenu={() => setUsersMenu(false)}
+        />
       )}
 
       {/* Flash Message */}
