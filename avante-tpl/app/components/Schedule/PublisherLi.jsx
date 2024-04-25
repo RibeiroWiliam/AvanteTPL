@@ -33,7 +33,7 @@ export default function PublisherLi({publisher}) {
             const startTime = new Date(assignment.startTime)
             const endTime = new Date(assignment.endTime)
             return(
-              <li>{getDay(startTime)} - {startTime.getHours()} as {endTime.getHours()}</li>
+              <li key={assignment.id}>{getDay(startTime)} - {startTime.getHours()} as {endTime.getHours()}</li>
             )         
           })}
         </ul>

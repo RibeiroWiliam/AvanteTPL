@@ -34,7 +34,7 @@ export default function UsersMenu({ publishers, assignments, closeMenu }) {
                 }
                 return 0; // Retorna 0 se os nomes forem iguais
               })
-              .map((publisher) => <PublisherLi publisher={publisher} />)}
+              .map((publisher) => <PublisherLi key={publisher.id} publisher={publisher} />)}
         </ul>
       </div>
     </Modal.Root>
