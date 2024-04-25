@@ -19,11 +19,14 @@ import { getPDFData } from "./printPDF";
 import { saveSchedule } from "./actions";
 import FlashMessage from "@/app/components/Shared/FlashMessage";
 import { getShiftDate } from "@/app/utils/getShiftDate";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import usePublishers from "@/app/hooks/usePublishers";
+import UsersMenu from "@/app/components/Schedule/UsersMenu";
 
 export default function Schedule() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { publishers } = usePublishers();
   const { equipments } = useEquipments();
   const { availabilities } = useAvailabilities();
   const {
@@ -32,7 +35,6 @@ export default function Schedule() {
     loading: assignmentsLoading,
   } = useAssignments();
   const [isLoading, setIsLoading] = useState(false);
-  
   const [activeEquipment, setActiveEquipment] = useState(0);
   const [activeWeek, setActiveWeek] = useState(new Date());
   const [menu, setMenu] = useState({
@@ -63,8 +65,8 @@ export default function Schedule() {
 
   const openMenu = useCallback(
     (day, shift, buttonRect) => {
-      const startTime = getShiftDate(day, shift)
-      const endTime = getShiftDate(day, shift, "endTime")
+      const startTime = getShiftDate(day, shift);
+      const endTime = getShiftDate(day, shift, "endTime");
 
       setMenu((prevMenu) => ({
         ...prevMenu,
@@ -161,10 +163,12 @@ export default function Schedule() {
     setIsLoading(false);
     setMessage({
       isOpen: true,
-      content: response
-    })
+      content: response,
+    });
     router.refresh();
   };
+
+  const [usersMenu, setUsersMenu] = useState(false);
 
   return (
     <>
@@ -174,12 +178,10 @@ export default function Schedule() {
         <Title>Programação TPL - Aruana</Title>
         {/* Date Picker and Actions */}
         <div className="flex gap-4 items-center">
-          <WeeklyDatePicker
-            onWeekChange={handleWeekChange}
-          />
+          <WeeklyDatePicker onWeekChange={handleWeekChange} />
           <ActionButton action={handleSave} icon="bi bi-floppy-fill" />
           <ActionButton
-            action={() => console.log("View Users")}
+            action={() => setUsersMenu(true)}
             icon="bi bi-people-fill"
           />
           {getPDFData(equipments, assignments, activeWeek) && (
@@ -203,7 +205,7 @@ export default function Schedule() {
             className={`${
               activeEquipment === equipment.id
                 ? "text-blue-700 border-b-2 border-blue-700"
-                : "text-gray-300 hover:text-blue-700"
+                : "text-gray-400 hover:text-blue-700"
             } font-bold px-4 py-2`}
           >
             {equipment.name}
@@ -223,7 +225,7 @@ export default function Schedule() {
           ))}
       </section>
 
-      {/* Menu */}
+      {/* Assignments Menu */}
       {session?.user.isAdmin && menu.isOpen && (
         <ScheduleMenu
           menu={menu}
@@ -231,6 +233,11 @@ export default function Schedule() {
           availabilities={filterAvailabilities(menu.startTime, menu.assignment)}
           saveChanges={saveChanges}
         />
+      )}
+
+      {/* Users Menu */}
+      {usersMenu && (
+        <UsersMenu assignments={assignments} publishers={publishers} closeMenu={() => setUsersMenu(false)}/>
       )}
 
       {/* Flash Message */}

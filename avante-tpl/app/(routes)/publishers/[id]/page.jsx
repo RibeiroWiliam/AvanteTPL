@@ -10,6 +10,8 @@ import { weekdays } from "@/app/constants/weekdays";
 import { shifts } from "@/app/constants/shifts";
 import Loading from "@/app/components/Shared/Loading";
 import { useSession } from "next-auth/react";
+import Title from "@/app/components/Shared/Title";
+import ActionButton from "@/app/components/Shared/ActionButton";
 
 export default function Publisher() {
   const { id } = useParams();
@@ -19,13 +21,16 @@ export default function Publisher() {
 
   useEffect(() => {
     if (
-      (session && session.user.isAdmin === false) &&
-      (session && session.user.id !== id)
+      session &&
+      session.user.isAdmin === false &&
+      session &&
+      session.user.id !== id
     ) {
       router.push("/dashboard");
     }
   }, [router, session, id]);
 
+  const [editMode, setEditMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [availabilityData, setAvailabilityData] = useState({
     publisherId: id,
@@ -89,9 +94,34 @@ export default function Publisher() {
 
   return (
     <>
-      <h1 className="text-3xl text-blue-700 font-bold mb-4">
-        {publisher?.name}
-      </h1>
+      {/* Header */}
+      <div className="flex flex-wrap justify-center sm:justify-between mb-4 gap-4 items-center bg-blue-800 p-4 rounded-lg">
+        {/* Title */}
+        <div className="flex flex-col gap-2">
+          <Title text="text-white">{publisher?.name}</Title>
+          <div className="flex gap-2 text-white text-sm">
+            {publisher?.isAdmin && (
+              <div className="bg-orange-500 px-4 py-2 rounded-lg">Administrador</div>
+            )}
+            {publisher?.pioneer ? (
+              <div className="bg-purple-500 px-4 py-2 rounded-lg">Pioneiro {publisher?.pioneer}</div>
+            ) : (
+              <div className="bg-blue-500 px-4 py-2 rounded-lg">Publicador</div>
+            )}
+          </div>
+        </div>
+        {/* Attributes */}
+        <div>
+            
+        </div>
+        {/* Actions */}
+        <div className="flex gap-4 items-center">
+          <ActionButton
+            action={() => setEditMode(!editMode)}
+            icon={editMode ? "bi bi-floppy-fill" : "bi bi-pencil-fill"}
+          />
+        </div>
+      </div>
       <h2 className="text-2xl my-4 text-gray-700 font-bold ">
         Disponibilidades
       </h2>

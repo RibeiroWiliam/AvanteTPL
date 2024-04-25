@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="w-full h-full grid grid-cols-1 lg:grid-cols-12">
+    <div style={{"grid-template-rows": "75px 1fr"}} className="w-full h-full grid grid-cols-1 lg:grid-cols-12">
       <Sidebar.Root isOpen={isSidebarOpen}>
         <Sidebar.Header toggleSidebar={toggleSidebar}/>
         {session && (
@@ -82,7 +82,7 @@ export default function DashboardLayout({ children }) {
         <div className="my-4 bg-gray-600 h-[1px]"></div>
         <Sidebar.Footer logoutUser={logoutUser} />
       </Sidebar.Root>
-      <header className="w-full col-span-8 xl:col-span-9 p-4 flex justify-between">
+      <header className="w-full col-span-8 xl:col-span-9 p-4 flex justify-between items-center bg-white shadow-lg">
         <Logo theme="light" />
         <div className="flex items-center gap-3">
         <button className="text-gray-700 hover:text-blue-700 transition text-3xl cursor-pointer">
@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }) {
         </div>      
       </header>
       <main
-        className={`p-4 col-span-8 xl:col-span-9 overflow-y-scroll`}
+        className={`p-6 col-span-8 xl:col-span-9 overflow-y-scroll relative`}
       >
         {children}
       </main>

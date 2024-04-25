@@ -103,7 +103,7 @@ export default function Assignments() {
             className={`${
               activeFilter === filter
                 ? "text-blue-700 border-b-2 border-blue-700"
-                : "text-gray-300 hover:text-blue-700"
+                : "text-gray-400 hover:text-blue-700"
             } font-bold px-4 py-2`}
           >
             {filter}

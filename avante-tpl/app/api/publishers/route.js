@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 export async function GET() {
   const publishers = await prisma.publisher.findMany();
 
-  return NextResponse.json({ publishers });
+  return NextResponse.json(publishers);
 }
 
 // Função para gerar um hash de senha

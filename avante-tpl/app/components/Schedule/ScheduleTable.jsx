@@ -18,7 +18,7 @@ export default function ScheduleTable({ day, assignments, openMenu }) {
   };
 
   return (
-    <table className="table-auto border-collapse my-4 text-center">
+    <table className="table-auto border-collapse my-4 text-center shadow">
       <thead>
         <tr>
           <th

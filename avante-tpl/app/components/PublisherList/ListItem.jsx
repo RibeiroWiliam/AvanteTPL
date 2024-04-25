@@ -9,22 +9,22 @@ export default function ListItem({ publisher, deleteUser }) {
       </td>
       <td className="py-3">
         {isAdmin && (
-          <span className="py-2 px-4 text-white bg-orange-400 rounded-lg mr-2">
+          <span className="py-2 px-4 text-orange-800 bg-orange-200 rounded-lg mr-2">
             Administrador
           </span>
         )}
         {pioneer && pioneer === "Auxiliar" && (
-          <span className="py-2 px-4 text-white bg-green-500 rounded-lg">
+          <span className="py-2 px-4 text-green-800 bg-green-200 rounded-lg">
             Pioneiro {pioneer}
           </span>
         )}
         {pioneer && pioneer === "Regular" && (
-          <span className="py-2 px-4 text-white bg-purple-500 rounded-lg">
+          <span className="py-2 px-4 text-purple-800 bg-purple-200 rounded-lg">
             Pioneiro {pioneer}
           </span>
         )}
         {!pioneer && (
-          <span className="py-2 px-4 text-white bg-blue-500 rounded-lg">
+          <span className="py-2 px-4 text-blue-800 bg-blue-200 rounded-lg">
           Publicador
         </span>
         )}
