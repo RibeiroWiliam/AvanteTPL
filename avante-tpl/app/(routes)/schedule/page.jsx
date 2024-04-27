@@ -73,7 +73,7 @@ export default function Schedule() {
     setIsLoading(assignmentsLoading);
   }, [assignmentsLoading]);
 
-  const handleWeekChange = (newWeek) => {
+  const handleWeekChange = newWeek => {
     setActiveWeek(newWeek);
   };
 
@@ -187,6 +187,7 @@ export default function Schedule() {
 
   return (
     <>
+      <section className="">
       {/* Header */}
       <div className="flex flex-wrap justify-center sm:justify-between mb-4 gap-4 items-center">
         {/* Title */}
@@ -226,9 +227,10 @@ export default function Schedule() {
             {equipment.name}
           </button>
         ))}
+      </section>
 
       {/* Schedule Grid */}
-      <section className="flex flex-col gap-4 overflow-x-scroll">
+      <section className="pt-4 flex flex-col gap-4">
         {assignments &&
           getWeekDays(activeWeek).map((day, index) => (
             <ScheduleTable

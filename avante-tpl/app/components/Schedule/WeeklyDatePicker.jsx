@@ -34,8 +34,8 @@ export default function WeeklyDatePicker({ onWeekChange }) {
     weeks.push({ start: weekStart, end: weekEnd, label });
   }
 
-  const options = weeks.map((week, index) => ({
-    value: index,
+  const options = weeks.map(week => ({
+    value: week.start,
     label: week.label
   }))
 
@@ -44,15 +44,10 @@ export default function WeeklyDatePicker({ onWeekChange }) {
       <Select
       id="week-picker"
       instanceId="week-picker"
-      defaultValue = {
-        options.filter(option => 
-           option.value === 2)
-      }
+      defaultValue = {options[2]}
       options={options}
-      onChange={(selectedOption) => {
-        const selectedWeekNumber = parseInt(selectedOption.value) + 1;
-        const newDate = addWeeks(startOfWeek(new Date()), selectedWeekNumber - 1);
-        onWeekChange(newDate);
+      onChange={selectedOption => {
+        onWeekChange(selectedOption.value);
       }}
     />
     </div>
