@@ -7,6 +7,7 @@ import axios from "axios";
 import getDay from "@/app/utils/getDay";
 import getMonth from "@/app/utils/getMonth";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameWeek, isSameMonth } from 'date-fns';
+import Title from "@/app/components/Shared/Title";
 
 export default function Assignments() {
   const { data: session } = useSession();
@@ -83,15 +84,9 @@ export default function Assignments() {
   return (
     <>
       {/* Header */}
-      <div className="flex justify-between">
+      <div className="flex justify-between mb-4">
         {/* Title */}
-        <h1 className="text-3xl text-blue-700 font-bold mb-4">Designações</h1>
-        {/* Actions */}
-        <div className="flex gap-4">
-          <button>
-            <i className="bi bi-sliders2 text-blue-600 text-3xl"></i>
-          </button>
-        </div>
+        <Title>Designações</Title>
       </div>
 
       {/* Filter Buttons */}

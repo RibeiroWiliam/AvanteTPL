@@ -82,17 +82,14 @@ export default function DashboardLayout({ children }) {
         <div className="my-4 bg-gray-600 h-[1px]"></div>
         <Sidebar.Footer logoutUser={logoutUser} />
       </Sidebar.Root>
-      <header className="w-full col-span-8 xl:col-span-9 p-4 flex justify-between items-center bg-white shadow-lg">
+      <header className={`w-full p-4 flex justify-between items-center bg-white shadow-lg ${isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"}`}>
         <Logo theme="light" />
         <div className="flex items-center gap-3">
-        <button className="text-gray-700 hover:text-blue-700 transition text-3xl cursor-pointer">
-        <i className="bi bi-gear-fill"></i>
-        </button>
         <Sidebar.Toggler toggleSidebar={toggleSidebar} />
         </div>      
       </header>
       <main
-        className={`p-6 col-span-8 xl:col-span-9 overflow-y-scroll relative`}
+        className={`p-6 overflow-y-scroll relative ${isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"}`}
       >
         {children}
       </main>
