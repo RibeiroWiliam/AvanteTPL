@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import Title from "@/app/components/Shared/Title";
 import ActionButton from "@/app/components/Shared/ActionButton";
 import AvailabilityMenu from "./AvailabilityMenu";
+import { shifts } from "@/app/constants/shifts";
 
 export default function Publisher() {
   const { id } = useParams();
@@ -30,76 +31,54 @@ export default function Publisher() {
     }
   }, [router, session, id]);
 
-  const [editMode, setEditMode] = useState(false);
+  const daysWithAvailability = weekdays.filter((day) =>
+    publisher?.availabilities.some(
+      (availability) => getDay(availability.startTime) === getDay(day.data)
+    )
+  );
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [availabilityData, setAvailabilityData] = useState({
-    publisherId: id,
-    startTime: "",
-    endTime: "",
-  });
-  const [isLoading, setIsLoading] = useState(loading); // Estado para controlar o carregamento
+  const [isLoading, setIsLoading] = useState(loading); 
 
   useEffect(() => {
     setIsLoading(loading);
   }, [loading]);
 
-  const openMenu = (day) => {
-    setIsMenuOpen(true);
-    setAvailabilityData({
-      ...availabilityData,
-      startTime: day.data,
-      endTime: day.data,
-    });
-  };
-
-
-
-  const addAvailability = async (shift) => {
-    setIsLoading(true); // Inicia o carregamento
-    const startTime = new Date(
-      availabilityData.startTime + " " + shift.startTime
-    ).toISOString();
-    const endTime = new Date(
-      availabilityData.endTime + " " + shift.endTime
-    ).toISOString();
-
-    const availability = {
-      ...availabilityData,
-      startTime,
-      endTime,
-    };
-    try {
-      setIsMenuOpen(false);
-      const response = await axios.post("/api/availabilities", availability);
-      setAvailabilityData({ ...availabilityData, startTime: "", endTime: "" });
-      console.log("Availability created:", response.data);
-      mutate();
-    } catch (error) {
-      console.error("Error creating availability:", error);
-    } finally {
-      setIsLoading(false); // Finaliza o carregamento
-    }
-  };
-
   const deleteAvailability = async (id) => {
-    setIsLoading(true); // Inicia o carregamento
     try {
       await axios.delete(`/api/availabilities/${id}`);
-      console.log("Availability deleted successfully.");
-      mutate();
     } catch (error) {
       console.error("Error deleting availability:", error);
     } finally {
-      setIsLoading(false); // Finaliza o carregamento
+      mutate()
     }
   };
+
+  const saveChanges = async menuAvailabilities => {
+    const newAvailabilities = menuAvailabilities.filter(availability => availability.addLocally)
+    const deletedAvailabilities = menuAvailabilities.filter(availability => availability.deletedLocally)
+    setIsMenuOpen(false)
+    setIsLoading(true)
+    try {
+      if(newAvailabilities.length > 0) await axios.post(`/api/availabilities/`, newAvailabilities)
+      if(deletedAvailabilities.length > 0){
+        for(const availability of deletedAvailabilities){
+          await deleteAvailability(availability.id)
+        }
+      }     
+    } catch(error){
+      console.error(error)
+    } finally {
+      mutate()
+      setIsLoading(false);
+    }
+  }
 
   return (
     <>
       {/* Header */}
-      <div className="flex flex-wrap justify-between mb-4 gap-4 items-center">
+      <div className="flex flex-wrap mb-4 gap-4 items-center">
         {/* Title */}
-
         <Title>{publisher?.name}</Title>
         <div className="flex gap-2 text-sm">
           {publisher?.isAdmin && (
@@ -118,21 +97,20 @@ export default function Publisher() {
           )}
         </div>
 
-        {/* Attributes */}
+        {/* Preferences */}
         <div></div>
-        {/* Actions */}
-        <div className="flex gap-4 items-center">
-          <ActionButton
-            action={() => setEditMode(!editMode)}
-            icon={editMode ? "bi bi-floppy-fill" : "bi bi-pencil-fill"}
-          />
-        </div>
       </div>
       <div className="my-4 bg-gray-600 h-[1px]"></div>
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl text-gray-500 font-bold ">Disponibilidades</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl text-gray-500 font-bold ">Disponibilidades</h2>
+          <ActionButton icon="bi bi-pencil-fill" action={() => setIsMenuOpen(true)}/>
+        </div>
+        
+
         <Availability.Root>
-          {weekdays.map((day, index) => (
+          {/* Renderiza apenas os dias com disponibilidades correspondentes */}
+          {daysWithAvailability.map((day, index) => (
             <div key={index}>
               <Availability.Title text={day.label} />
               <Availability.Grid>
@@ -141,6 +119,9 @@ export default function Publisher() {
                     .filter(
                       (availability) =>
                         getDay(availability.startTime) === getDay(day.data)
+                    )
+                    .sort((a, b) =>
+                      new Date(a.startTime) - new Date(b.startTime)
                     )
                     .map((availability) => {
                       const startTime = new Date(availability.startTime);
@@ -160,22 +141,17 @@ export default function Publisher() {
                         2,
                         "0"
                       );
+                      const text = `${startHours}:${startMinutes} - ${endHours}:${endMinutes}`
                       return (
                         <Availability.Card
-                          color="bg-blue-600"
+                          color={shifts.find(shift => shift.label === text).color}
                           onClick={() => deleteAvailability(availability.id)}
                           key={availability.id}
                         >
-                          {startHours}:{startMinutes} - {endHours}:{endMinutes}
+                          {text}
                         </Availability.Card>
                       );
                     })}
-                <Availability.Button
-                  onClick={() => openMenu(day)}
-                  color="bg-gray-600 hover:bg-gray-500 transition"
-                >
-                  Adicionar <i className="bi bi-plus-lg"></i>
-                </Availability.Button>
               </Availability.Grid>
             </div>
           ))}
@@ -184,6 +160,7 @@ export default function Publisher() {
 
       {isMenuOpen && (
         <AvailabilityMenu
+          publisherId={publisher.id}
           availabilities={publisher.availabilities}
           closeMenu={() => setIsMenuOpen(false)}
           saveChanges={availabilities => saveChanges(availabilities)}
