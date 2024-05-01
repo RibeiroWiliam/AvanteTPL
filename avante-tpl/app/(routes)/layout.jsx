@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }) {
           isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"
         }`}
       >
-        <div className="flex">
+        <div className={`flex ${isSidebarOpen? "invisible" : ""}`}>
           <Image width={25} height={25} src="/favicon.ico" />
           <Logo theme="light" />
         </div>
