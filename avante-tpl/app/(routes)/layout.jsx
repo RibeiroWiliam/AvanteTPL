@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useMediaQuery } from "react-responsive";
 import Logo from "../components/Shared/Logo";
+import Image from "next/image";
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -34,9 +35,12 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div style={{"grid-template-rows": "75px 1fr"}} className="w-full h-full grid grid-cols-1 lg:grid-cols-12">
+    <div
+      style={{ "grid-template-rows": "75px 1fr" }}
+      className="w-full h-full grid grid-cols-1 lg:grid-cols-12"
+    >
       <Sidebar.Root isOpen={isSidebarOpen}>
-        <Sidebar.Header toggleSidebar={toggleSidebar}/>
+        <Sidebar.Header toggleSidebar={toggleSidebar} />
         {session && (
           <Sidebar.User
             user={session.user.name}
@@ -82,14 +86,23 @@ export default function DashboardLayout({ children }) {
         <div className="my-4 bg-gray-600 h-[1px]"></div>
         <Sidebar.Footer logoutUser={logoutUser} />
       </Sidebar.Root>
-      <header className={`w-full p-4 flex justify-between items-center bg-white shadow-lg ${isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"}`}>
-        <Logo theme="light" />
+      <header
+        className={`w-full p-4 flex justify-between items-center bg-white shadow-lg ${
+          isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"
+        }`}
+      >
+        <div className="flex">
+          <Image width={25} height={25} src="/favicon.ico" />
+          <Logo theme="light" />
+        </div>
         <div className="flex items-center gap-3">
-        <Sidebar.Toggler toggleSidebar={toggleSidebar} />
-        </div>      
+          <Sidebar.Toggler toggleSidebar={toggleSidebar} />
+        </div>
       </header>
       <main
-        className={`p-6 overflow-y-scroll relative ${isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"}`}
+        className={`p-6 overflow-y-scroll relative ${
+          isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"
+        }`}
       >
         {children}
       </main>

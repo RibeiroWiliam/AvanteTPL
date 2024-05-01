@@ -1,11 +1,13 @@
 "use client";
 
 import Logo from "../Shared/Logo";
+import Image from "next/image";
 
 export default function SidebarHeader({ toggleSidebar }) {
   return (
     <>
-      <div className="p-2.5 mt-1 flex pr-4 justify-between">
+      <div className="p-2.5 mt-1 flex items-center">
+        <Image width={25} height={25} src="/favicon.ico"/>
         <Logo />
         <button
           className="lg:hidden cursor-pointer text-white"
