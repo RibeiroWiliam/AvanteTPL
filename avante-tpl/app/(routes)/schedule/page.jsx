@@ -29,14 +29,6 @@ const compareDateTime = (date1, date2) => {
   );
 };
 
-const findAssignment = (publisherId, date, assignments) => {
-  return assignments.find(
-    assignment =>
-      compareDateTime(date, new Date(assignment.startTime)) &&
-      assignment.publishers.find(publisher => publisher.id === publisherId)
-  );
-};
-
 export default function Schedule() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -73,7 +65,7 @@ export default function Schedule() {
     setIsLoading(assignmentsLoading);
   }, [assignmentsLoading]);
 
-  const handleWeekChange = newWeek => {
+  const handleWeekChange = (newWeek) => {
     setActiveWeek(newWeek);
   };
 
@@ -118,7 +110,7 @@ export default function Schedule() {
     setMenu((prevMenu) => ({ ...prevMenu, isOpen: false }));
   }, []);
 
-  const filterAssignments = (day) => {
+  const filterAssignments = day => {
     const filteredAssignments = assignments.filter((assignment) => {
       const assignmentDate = new Date(assignment.startTime);
       return (
@@ -130,24 +122,23 @@ export default function Schedule() {
   };
 
   const filterAvailabilities = (startTime, assignment) => {
-    const filteredAvailabilities = availabilities.filter((availability) => {
+    const filteredAvailabilities = availabilities.filter(availability => {
       const availabilityDate = new Date(availability.startTime);
-      return (
-        compareDateTime(availabilityDate, startTime) &&
-        !assignment.publishers.find(
-          (publisher) => publisher.id === availability.publisher.id
-        ) &&
-        !findAssignment(
-          availability.publisher.id,
-          availabilityDate,
-          assignments
+
+      /* Filtra os publicadores ja designados naquele horario */
+      if (
+        assignment.publishers.find(
+          publisher => publisher.id === availability.publisherId
         )
-      );
+      )
+        return false;
+       /* FIltra as disponibilidades com horarios diferentes */
+      if (!compareDateTime(availabilityDate, startTime)) return false;
+      return true;
     });
+    console.log(startTime, filteredAvailabilities);
     return filteredAvailabilities;
   };
-
-  
 
   const saveChanges = (modifiedAssignment) => {
     const foundAssignmentIndex = assignments.findIndex(
@@ -188,45 +179,45 @@ export default function Schedule() {
   return (
     <>
       <section className="">
-      {/* Header */}
-      <div className="flex flex-wrap justify-center sm:justify-between mb-4 gap-4 items-center">
-        {/* Title */}
-        <Title>Programação TPL - Aruana</Title>
-        {/* Date Picker and Actions */}
-        <div className="flex gap-4 items-center">
-          <WeeklyDatePicker onWeekChange={handleWeekChange} />
-          <ActionButton action={handleSave} icon="bi bi-floppy-fill" />
-          <ActionButton
-            action={() => setUsersMenu(true)}
-            icon="bi bi-people-fill"
-          />
-          {getPDFData(equipments, assignments, activeWeek) && (
-            <PrintButton
-              document={
-                <SchedulePDF
-                  data={getPDFData(equipments, assignments, activeWeek)}
-                />
-              }
+        {/* Header */}
+        <div className="flex flex-wrap justify-center sm:justify-between mb-4 gap-4 items-center">
+          {/* Title */}
+          <Title>Programação TPL - Aruana</Title>
+          {/* Date Picker and Actions */}
+          <div className="flex gap-4 items-center">
+            <WeeklyDatePicker onWeekChange={handleWeekChange} />
+            <ActionButton action={handleSave} icon="bi bi-floppy-fill" />
+            <ActionButton
+              action={() => setUsersMenu(true)}
+              icon="bi bi-people-fill"
             />
-          )}
+            {getPDFData(equipments, assignments, activeWeek) && (
+              <PrintButton
+                document={
+                  <SchedulePDF
+                    data={getPDFData(equipments, assignments, activeWeek)}
+                  />
+                }
+              />
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Equipment Buttons */}
-      {equipments &&
-        equipments.map((equipment) => (
-          <button
-            key={equipment.id}
-            onClick={() => setActiveEquipment(equipment.id)}
-            className={`${
-              activeEquipment === equipment.id
-                ? "text-blue-700 border-b-2 border-blue-700"
-                : "text-gray-400 hover:text-blue-700"
-            } font-bold px-4 py-2`}
-          >
-            {equipment.name}
-          </button>
-        ))}
+        {/* Equipment Buttons */}
+        {equipments &&
+          equipments.map((equipment) => (
+            <button
+              key={equipment.id}
+              onClick={() => setActiveEquipment(equipment.id)}
+              className={`${
+                activeEquipment === equipment.id
+                  ? "text-blue-700 border-b-2 border-blue-700"
+                  : "text-gray-400 hover:text-blue-700"
+              } font-bold px-4 py-2`}
+            >
+              {equipment.name}
+            </button>
+          ))}
       </section>
 
       {/* Schedule Grid */}

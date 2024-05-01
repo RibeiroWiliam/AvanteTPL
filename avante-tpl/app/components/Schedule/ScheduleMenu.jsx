@@ -2,6 +2,7 @@
 
 import getDay from "@/app/utils/getDay";
 import { useEffect, useState } from "react";
+import { Modal } from "../Modal";
 
 export default function ScheduleMenu({
   menu,
@@ -16,10 +17,10 @@ export default function ScheduleMenu({
   const [checkedPublishers, setCheckedPublishers] = useState([]);
 
   useEffect(() => {
-    if(assignment){
-      setCheckedPublishers(assignment.publishers)
-    }    
-  }, [assignment])
+    if (assignment) {
+      setCheckedPublishers(assignment.publishers);
+    }
+  }, [assignment]);
 
   const handleCheckboxChange = (event, publisher) => {
     const { id } = publisher;
@@ -40,19 +41,9 @@ export default function ScheduleMenu({
   };
 
   return (
-    <div
-      className="absolute mt-8 mx-auto w-1/4 bg-white border border-gray-300 rounded-lg p-4 z-10"
-      style={{ left: position.x, top: position.y }}
-    >
-      <button
-        onClick={closeMenu}
-        className="absolute top-2 right-2 text-gray-800 hover:text-red-600"
-      >
-        <i className="bi bi-x-lg"></i>
-      </button>
-      <h3 className="text-lg text-gray-900 font-semibold mb-2 text-center">
-        {shiftLabel}
-      </h3>
+    <Modal.Root width="w-96">
+      <Modal.Toggler closeMenu={closeMenu} />
+      <Modal.Title>{shiftLabel}</Modal.Title>
       <div className="flex bg-gray-100 p-2 px-4 gap-4 w-full rounded-lg">
         <i className="bi bi-search text-gray-400"></i>
         <input
@@ -60,53 +51,95 @@ export default function ScheduleMenu({
           type="text"
           placeholder="Nome do publicador..."
         />
-      </div>    
-      <form action="">
-        <ul className="p-4">
-          {assignment &&
-            assignment.publishers.map((publisher, index) => (
-              <li key={index} className="flex gap-4">
-                <input
-                  defaultChecked
-                  type="checkbox"
-                  id={publisher.id}
-                  value={publisher}
-                  onChange={(event) => handleCheckboxChange(event, publisher)}
-                />
-                <label htmlFor={publisher.id}>{publisher.name}</label>
-              </li>
-            ))}
-          {availabilities &&
-            availabilities.map((availability) => (
-              <li key={availability.id} className="flex gap-4">
-                <input
-                  type="checkbox"
-                  id={availability.publisher.id}
-                  value={availability.publisher}
-                  onChange={(event) =>
-                    handleCheckboxChange(event, availability.publisher)
+      </div>
+      {assignment && assignment.publishers.length > 0 && (
+        <>
+          <h3 className="font-bold text-gray-500 mt-4 mb-1">
+            Publicadores Selecionados
+          </h3>
+          <ul>
+            {assignment.publishers
+              .sort((a, b) => {
+                const nameA = a.name.toUpperCase(); // converte o nome para maiúsculas
+                const nameB = b.name.toUpperCase(); // converte o nome para maiúsculas
+
+                if (nameA < nameB) {
+                  return -1; // Retorna um número negativo se a vem antes de b
+                }
+                if (nameA > nameB) {
+                  return 1; // Retorna um número positivo se a vem depois de b
+                }
+                return 0; // Retorna 0 se os nomes forem iguais
+              })
+              .map((publisher, index) => (
+                <li key={index} className="flex gap-4">
+                  <input
+                    defaultChecked
+                    type="checkbox"
+                    id={publisher.id}
+                    value={publisher}
+                    onChange={(event) => handleCheckboxChange(event, publisher)}
+                  />
+                  <label htmlFor={publisher.id}>{publisher.name}</label>
+                </li>
+              ))}
+          </ul>
+        </>
+      )}
+      {availabilities && availabilities.length > 0 && (
+        <>
+          <h3 className="font-bold text-gray-500 mt-4 mb-1">
+            Publicadores Disponíveis
+          </h3>
+          <ul className="mb-4">
+            {availabilities &&
+              availabilities
+                .sort((a, b) => {
+                  const nameA = a.publisher.name.toUpperCase(); // converte o nome para maiúsculas
+                  const nameB = b.publisher.name.toUpperCase(); // converte o nome para maiúsculas
+
+                  if (nameA < nameB) {
+                    return -1; // Retorna um número negativo se a vem antes de b
                   }
-                />
-                <label htmlFor={availability.publisher.id}>
-                  {availability.publisher.name}
-                </label>
-              </li>
-            ))}
-          {(assignment && assignment.publishers.length === 0) ||
-            (!assignment && availabilities && availabilities.length === 0 && (
-              <div className="text-center w-full text-gray-400">
-                Não há publicadores disponíveis.
-              </div>
-            ))}
-        </ul>
-        <button
-          type="button"
-          onClick={() => handleSave()}
-          className="w-full rounded-lg bg-blue-600 text-white p-2 px-4 hover:bg-blue-500 transition cursor"
+                  if (nameA > nameB) {
+                    return 1; // Retorna um número positivo se a vem depois de b
+                  }
+                  return 0; // Retorna 0 se os nomes forem iguais
+                })
+                .map((availability) => (
+                  <li key={availability.id} className="flex gap-4">
+                    <input
+                      type="checkbox"
+                      id={availability.publisher.id}
+                      value={availability.publisher}
+                      onChange={(event) =>
+                        handleCheckboxChange(event, availability.publisher)
+                      }
+                    />
+                    <label htmlFor={availability.publisher.id}>
+                      {availability.publisher.name}
+                    </label>
+                  </li>
+                ))}
+          </ul>
+        </>
+      )}
+      {assignment.publishers.length === 0 && availabilities.length === 0 && (
+        <div className="py-4 text-center w-full text-gray-400">
+          Não há publicadores disponíveis.
+        </div>
+      )}
+      <div className="flex gap-4 justify-between">
+        <Modal.Button onClick={closeMenu} variant="outline" type="button">
+          Cancelar
+        </Modal.Button>
+        <Modal.Button
+          onClick={handleSave}
+          disabled={checkedPublishers.length <= 0}
         >
           Salvar
-        </button>
-      </form>
-    </div>
+        </Modal.Button>
+      </div>
+    </Modal.Root>
   );
 }

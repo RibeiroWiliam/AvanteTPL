@@ -1,4 +1,4 @@
-export default function ModalButton({onClick, variant = "base", children}) {
+export default function ModalButton({type = "submit", onClick, variant = "base", disabled=false, children}) {
   const getStyles = () => {
     switch (variant) {
       case 'base':
@@ -10,7 +10,7 @@ export default function ModalButton({onClick, variant = "base", children}) {
     }
   }
   return (
-    <button onClick={onClick} className={`${getStyles()} py-2 px-6 min-w-40 rounded-lg transition`}>
+    <button type={type} onClick={onClick} className={`${getStyles()} py-2 px-6 min-w-40 rounded-lg transition ${disabled ? "cursor-not-allowed" : ""}`} disabled={disabled}>
       {children}
     </button>
   )
