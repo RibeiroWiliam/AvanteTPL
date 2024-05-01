@@ -44,8 +44,8 @@ export default function ScheduleTable({ day, assignments, openMenu }) {
               {shifts.map((shift, index) => (
                 <th
                   key={index}
-                  onClick={(e) =>
-                    openMenu(day, shift, e.target.getBoundingClientRect())
+                  onClick={() =>
+                    openMenu(day, shift)
                   }
                   className={`${shift.color} p-2 lg:p-4 text-white border cursor-pointer text-sm md:text-base text-nowrap`}
                 >

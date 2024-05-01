@@ -45,7 +45,6 @@ export default function Schedule() {
   const [activeWeek, setActiveWeek] = useState(new Date());
   const [menu, setMenu] = useState({
     isOpen: false,
-    position: { x: 0, y: 0 },
     startTime: new Date(),
     endTime: new Date(),
     assignment: null,
@@ -70,14 +69,13 @@ export default function Schedule() {
   };
 
   const openMenu = useCallback(
-    (day, shift, buttonRect) => {
+    (day, shift) => {
       const startTime = getShiftDate(day, shift);
       const endTime = getShiftDate(day, shift, "endTime");
 
       setMenu((prevMenu) => ({
         ...prevMenu,
         isOpen: true,
-        position: { x: buttonRect.left, y: buttonRect.top },
         startTime,
         endTime,
         assignment: assignments.find(

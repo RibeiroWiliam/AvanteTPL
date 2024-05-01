@@ -3,6 +3,7 @@
 import getDay from "@/app/utils/getDay";
 import { useEffect, useState } from "react";
 import { Modal } from "../Modal";
+import SearchBar from "../Shared/SearchBar";
 
 export default function ScheduleMenu({
   menu,
@@ -10,11 +11,12 @@ export default function ScheduleMenu({
   availabilities,
   saveChanges,
 }) {
-  const { startTime, endTime, position, assignment } = menu;
+  const { startTime, endTime, assignment } = menu;
   const shiftLabel = `${getDay(
     startTime
   )} ${startTime.getHours()}:00 - ${endTime.getHours()}:00`;
   const [checkedPublishers, setCheckedPublishers] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (assignment) {
@@ -44,14 +46,7 @@ export default function ScheduleMenu({
     <Modal.Root width="w-96">
       <Modal.Toggler closeMenu={closeMenu} />
       <Modal.Title>{shiftLabel}</Modal.Title>
-      <div className="flex bg-gray-100 p-2 px-4 gap-4 w-full rounded-lg">
-        <i className="bi bi-search text-gray-400"></i>
-        <input
-          className="outline-none bg-gray-100 w-full"
-          type="text"
-          placeholder="Nome do publicador..."
-        />
-      </div>
+      <SearchBar setSearch={setSearch}/>
       {assignment && assignment.publishers.length > 0 && (
         <>
           <h3 className="font-bold text-gray-500 mt-4 mb-1">
@@ -94,6 +89,7 @@ export default function ScheduleMenu({
           <ul className="mb-4">
             {availabilities &&
               availabilities
+                .filter(availability => availability.publisher.name.toLowerCase().includes(search.toLowerCase()))
                 .sort((a, b) => {
                   const nameA = a.publisher.name.toUpperCase(); // converte o nome para maiúsculas
                   const nameB = b.publisher.name.toUpperCase(); // converte o nome para maiúsculas
