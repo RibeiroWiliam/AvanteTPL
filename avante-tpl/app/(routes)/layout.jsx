@@ -61,7 +61,7 @@ export default function DashboardLayout({ children }) {
             />
           )}
           <Sidebar.Item
-            icon="bi-bookmark"
+            icon="bi-bookmarks"
             text="Designações"
             href="/assignments"
             isActive={pathname === "/assignments"}

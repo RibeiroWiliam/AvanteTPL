@@ -10,6 +10,7 @@ export async function GET(request, { params }) {
       where: { id },
       include: {
         availabilities: true,
+        assignments: true
       },
     });
 

@@ -6,7 +6,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import getDay from "@/app/utils/getDay";
 import getMonth from "@/app/utils/getMonth";
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  isSameMonth,
+} from "date-fns";
 import Title from "@/app/components/Shared/Title";
 
 export default function Assignments() {
@@ -47,7 +53,7 @@ export default function Assignments() {
     return `${names.join(", ")} e ${lastPublisher}`;
   };
 
-  const filters = ["Todos", "Hoje", "Esta semana", "Este mês"]
+  const filters = ["Todos", "Hoje", "Esta semana", "Este mês"];
 
   const applyFilter = (assignments, filter) => {
     const today = new Date();
@@ -69,8 +75,19 @@ export default function Assignments() {
             isSameMonth(new Date(assignment.endTime), endOfMonthDate)
         );
       case "Hoje":
-        const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+        const startOfToday = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+        const endOfToday = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate(),
+          23,
+          59,
+          59
+        );
         return assignments.filter(
           (assignment) =>
             new Date(assignment.startTime) >= startOfToday &&
@@ -109,32 +126,41 @@ export default function Assignments() {
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
         {assignments &&
           applyFilter(assignments, activeFilter)
-          .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
-          .map((assignment) => {
-            const { publishers, equipment } = assignment;
-            const startTime = new Date(assignment.startTime);
-            const endTime = new Date(assignment.endTime);
-            return (
-              <div className="shadow-lg bg-blue-600 text-white p-4 rounded-lg" key={assignment.id}>
-                <h2 className="font-bold text-lg">{`${getDay(
-                  assignment.startTime
-                )} - ${startTime.getDate()} de ${getMonth(startTime)}`}</h2>
-                <div className="flex flex-col gap-2 pt-4">
-                  <div className="flex gap-2">
-                    <i className="bi bi-clock-fill"></i>{" "}
-                    {`${startTime.getHours()}:00 - ${endTime.getHours()}:00`}
+            .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+            .map((assignment) => {
+              const { publishers, equipment } = assignment;
+              const startTime = new Date(assignment.startTime);
+              const endTime = new Date(assignment.endTime);
+              return (
+                <div
+                  className="shadow-lg bg-white p-4 rounded-xl"
+                  key={assignment.id}
+                >
+                  <div className="flex justify-between">
+                    <h2 className="font-bold text-lg">{`${getDay(
+                      assignment.startTime
+                    )} - ${startTime.getDate()} de ${getMonth(startTime)}`}</h2>
+                    <button>
+                      <i className="bi bi-three-dots-vertical"></i>
+                    </button>
                   </div>
-                  <div className="flex gap-2">
-                    <i className="bi bi-geo-alt-fill"></i> {equipment.name}
-                  </div>
-                  <div className="flex gap-2">
-                    <i className="bi bi-people-fill"></i>
-                    <span>{renderPublishersList(publishers)}</span>
+
+                  <div className="flex flex-col gap-2 pt-4">
+                    <div className="flex gap-2 text-gray-500">
+                      <i className="bi bi-clock-fill"></i>{" "}
+                      {`${startTime.getHours()}:00 - ${endTime.getHours()}:00`}
+                    </div>
+                    <div className="flex gap-2 text-gray-500">
+                      <i className="bi bi-geo-alt-fill"></i> {equipment.name}
+                    </div>
+                    <div className="flex gap-2 text-gray-500">
+                      <i className="bi bi-people-fill"></i>
+                      <span>{renderPublishersList(publishers)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
       </section>
 
       {/* Loading Indicator */}
