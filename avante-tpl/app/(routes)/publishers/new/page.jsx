@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { weekdays } from "@/app/constants/weekdays";
 import { shifts } from "@/app/constants/shifts";
 import { Availability } from "@/app/components/Availability";
+import { useSession } from "next-auth/react";
 
 export default function NewPublisher() {
   const router = useRouter();
