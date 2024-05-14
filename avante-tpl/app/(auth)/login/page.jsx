@@ -7,6 +7,13 @@ import Logo from "@/app/components/Shared/Logo";
 
 export default function Login() {
   const router = useRouter();
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status && status !== "unauthenticated") {
+      router.push("/dashboard");
+    }
+  }, [router, status]); 
   const [data, setData] = useState({
     name: "",
     password: "",

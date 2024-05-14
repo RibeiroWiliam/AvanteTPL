@@ -2,7 +2,7 @@ export default function SidebarRoot({ children, isOpen }) {
   return (
     <>
       {isOpen && (
-        <nav className="absolute lg:static lg:col-span-4 xl:col-span-3 lg:row-span-2 z-40 h-full p-2 w-full overflow-y-auto text-center bg-gray-900">
+        <nav className="absolute lg:static row-span-2 z-40 h-full w-full p-4 pb-8 border overflow-y-auto flex flex-col justify-between text-center">
           {children}
         </nav>
       )}

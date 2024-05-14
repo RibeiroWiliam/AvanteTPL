@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import getDay from "@/app/utils/getDay";
 import getMonth from "@/app/utils/getMonth";
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameWeek, isSameMonth } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
 import Title from "@/app/components/Shared/Title";
 
 export default function Assignments() {
@@ -97,8 +97,8 @@ export default function Assignments() {
             onClick={() => setActiveFilter(filter)}
             className={`${
               activeFilter === filter
-                ? "text-blue-700 border-b-2 border-blue-700"
-                : "text-gray-400 hover:text-blue-700"
+                ? "text-primary border-b-2 border-primary"
+                : "text-gray-400 hover:text-primary"
             } font-bold px-4 py-2`}
           >
             {filter}

@@ -9,6 +9,7 @@ import { Availability } from "@/app/components/Availability";
 
 export default function NewPublisher() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [formData, setFormData] = useState({
     name: "",
     password: "",
@@ -29,6 +30,12 @@ export default function NewPublisher() {
       isOpen: !prevMenu.isOpen,
     }));
   };
+
+  useEffect(() => {
+    if (session && !session.user.isAdmin) {
+      router.push("/dashboard");
+    }
+  }, [router, session]);
 
   const handleCheckbox = (e) => {
     const startTime = new Date(`${menu.day} ${e.target.value.startTime}`);

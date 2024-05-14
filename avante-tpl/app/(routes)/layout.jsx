@@ -35,63 +35,56 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div
-      style={{ "grid-template-rows": "75px 1fr" }}
-      className="w-full h-full grid grid-cols-1 lg:grid-cols-12"
-    >
+    <div className="w-full h-full grid grid-cols-layout grid-rows-layout">
       <Sidebar.Root isOpen={isSidebarOpen}>
-        <Sidebar.Header toggleSidebar={toggleSidebar} />
-        {session && (
-          <Sidebar.User
-            user={session.user.name}
-            isAdmin={session.user.isAdmin}
-            pioneer={session.user.pioneer}
-          />
-        )}
-        <div className="my-4 bg-gray-600 h-[1px]"></div>
-        <Sidebar.Item
-          icon="bi-house-door-fill"
-          text="Home"
-          href="/dashboard"
-          isActive={pathname === "/dashboard"}
-        />
-        {session && (
+        <div>
+          <Sidebar.Header toggleSidebar={toggleSidebar} />
+          {session && (
+            <Sidebar.User
+              user={session.user.name}
+              isAdmin={session.user.isAdmin}
+              pioneer={session.user.pioneer}
+            />
+          )}
           <Sidebar.Item
-            icon="bi-person-fill"
-            text="Meu Perfil"
-            href={`/publishers/${session?.user.id}` || "#"}
-            isActive={pathname === `/publishers/${session?.user.id}`}
+            icon="bi-house-door"
+            text="Home"
+            href="/dashboard"
+            isActive={pathname === "/dashboard"}
           />
-        )}
-        <Sidebar.Item
-          icon="bi-bookmark-fill"
-          text="Designações"
-          href="/assignments"
-          isActive={pathname === "/assignments"}
-        />
-        <Sidebar.Item
-          icon="bi bi-file-earmark-text-fill"
-          text="Programação"
-          href="/schedule"
-          isActive={pathname === "/schedule"}
-        />
-        {session?.user.isAdmin && (
+          {session && (
+            <Sidebar.Item
+              icon="bi-person"
+              text="Meu Perfil"
+              href={`/publishers/${session?.user.id}` || "#"}
+              isActive={pathname === `/publishers/${session?.user.id}`}
+            />
+          )}
           <Sidebar.Item
-            icon="bi bi-people-fill"
-            text="Publicadores"
-            href="/publishers"
-            isActive={pathname === "/publishers"}
+            icon="bi-bookmark"
+            text="Designações"
+            href="/assignments"
+            isActive={pathname === "/assignments"}
           />
-        )}
-        <div className="my-4 bg-gray-600 h-[1px]"></div>
+          <Sidebar.Item
+            icon="bi bi-file-earmark-text"
+            text="Programação"
+            href="/schedule"
+            isActive={pathname === "/schedule"}
+          />
+          {session?.user.isAdmin && (
+            <Sidebar.Item
+              icon="bi bi-people"
+              text="Publicadores"
+              href="/publishers"
+              isActive={pathname === "/publishers"}
+            />
+          )}
+        </div>
         <Sidebar.Footer logoutUser={logoutUser} />
       </Sidebar.Root>
-      <header
-        className={`w-full p-4 flex justify-between items-center bg-white shadow-lg ${
-          isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"
-        }`}
-      >
-        <div className={`flex ${isSidebarOpen? "invisible" : ""}`}>
+      <header className={`w-full p-4 flex justify-between items-center`}>
+        <div className={`flex ${isSidebarOpen ? "hidden" : ""}`}>
           <Image width={25} height={25} src="/favicon.ico" />
           <Logo theme="light" />
         </div>
@@ -99,11 +92,7 @@ export default function DashboardLayout({ children }) {
           <Sidebar.Toggler toggleSidebar={toggleSidebar} />
         </div>
       </header>
-      <main
-        className={`p-6 overflow-y-scroll relative ${
-          isSidebarOpen ? "lg:col-span-8 xl:col-span-9" : "lg:col-span-12"
-        }`}
-      >
+      <main className={`p-8 overflow-y-scroll relative bg-gray-100`}>
         {children}
       </main>
     </div>

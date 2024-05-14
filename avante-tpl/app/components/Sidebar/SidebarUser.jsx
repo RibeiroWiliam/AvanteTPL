@@ -8,7 +8,7 @@ export default function SidebarUser({ user, isAdmin, pioneer, href }) {
       >
         <Image src="/userIcon.png" alt="User Icon" width={45} height={45} />
         <div className="flex flex-col text-start">
-          <span className="text-[16px] text-gray-200 font-bold">{user}</span>
+          <span className="text-[16px] text-gray-500 font-bold">{user}</span>
           <span className="text-[14px] text-gray-400 font-bold">
             {isAdmin ? "Admin" : pioneer ? `Pioneiro ${pioneer}` : "Publicador"}
           </span>

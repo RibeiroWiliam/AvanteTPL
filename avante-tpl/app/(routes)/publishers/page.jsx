@@ -3,12 +3,12 @@
 import { PublisherList } from "@/app/components/PublisherList";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Title from "@/app/components/Shared/Title";
 import SearchBar from "@/app/components/Shared/SearchBar";
 import Loading from "@/app/components/Shared/Loading";
 import { Modal } from "@/app/components/Modal";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const applyFilters = (publishers, filter, search) => {
   const filteredPublishers = search
@@ -27,18 +27,15 @@ const applyFilters = (publishers, filter, search) => {
 };
 
 export default function Publishers() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [publishers, setPublishers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [search, setSearch] = useState("");
-  const [editMenu, setEditMenu] = useState({
-    open: false,
-  });
   const [deleteMenu, setDeleteMenu] = useState({
     open: false,
   });
-  const { data: session } = useSession();
-  const router = useRouter();
 
   useEffect(() => {
     if (session && !session.user.isAdmin) {
@@ -76,8 +73,6 @@ export default function Publishers() {
     }
   };
 
-  const editUser = async (publisher) => {};
-
   const filters = ["Todos", "Pioneiros", "Administradores"];
 
   return (
@@ -90,9 +85,10 @@ export default function Publishers() {
           <div className="flex gap-4">
             <a
               href="/publishers/new"
-              className="text-gray-600 hover:text-blue-600 transition text-2xl lg:text-3xl"
+              className="bg-primary text-white p-2 px-4 rounded-xl hover:bg-hover hover:text-gray-200 transition duration-300 flex gap-4"
             >
               <i className="bi bi-person-fill-add"></i>
+              <span>Novo Publicador</span>
             </a>
           </div>
         </div>
@@ -108,9 +104,9 @@ export default function Publishers() {
             onClick={() => setActiveFilter(filter)}
             className={`${
               activeFilter === filter
-                ? "text-blue-700 border-b-2 border-blue-700"
-                : "text-gray-400 hover:text-blue-700"
-            } font-bold px-4 py-2`}
+                ? "text-primary border-b-2 border-primary"
+                : "text-gray-400 hover:text-primary"
+            } px-4 py-2`}
           >
             {filter}
           </button>
@@ -124,9 +120,6 @@ export default function Publishers() {
               <PublisherList.Item
                 key={publisher.id}
                 publisher={publisher}
-                editMenu={(publisher) =>
-                  setEditMenu({ open: true, publisher: publisher })
-                }
                 deleteMenu={(publisher) =>
                   setDeleteMenu({ open: true, publisher: publisher })
                 }
@@ -134,32 +127,6 @@ export default function Publishers() {
             ))}
         </tbody>
       </PublisherList.Root>
-      {editMenu.open && (
-        <Modal.Root width="w-96">
-          <Modal.Toggler closeMenu={() => setEditMenu({})} />
-          <Modal.Title>{editMenu.publisher.name}</Modal.Title>
-          <form onSubmit={editUser(editMenu.publisher)} className="flex flex-col gap-4">
-            <div className="flex gap-2">
-            <label htmlFor="name">Nome</label>
-            <input defaultValue={editMenu.publisher.name} onChange={e => editMenu.publisher.name = e.target.value} type="text"/>
-            </div>
-            <div>
-            <label htmlFor="pioneer">Permissão</label>
-            <input value={editMenu.publisher.pioneer} type="text"/>
-            </div>
-            
-            <label htmlFor="pioneer">Privilégio</label>
-            <div className="w-full flex gap-4 justify-center">
-            <Modal.Button onClick={() => setEditMenu({})} variant="outline">
-              Cancelar
-            </Modal.Button>
-            <Modal.Button onClick={() => editUser(editMenu.publisher)}>
-              Salvar
-            </Modal.Button>
-          </div>
-          </form>
-        </Modal.Root>
-      )}
       {deleteMenu.open && (
         <Modal.Root width="w-96">
           <Modal.Toggler closeMenu={() => setDeleteMenu({})} />

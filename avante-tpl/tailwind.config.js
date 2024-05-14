@@ -6,6 +6,18 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    extend: {
+      colors: {
+        "primary": "#27b82c",
+        "hover": "#11661a",
+      },
+      gridTemplateColumns: {
+        'layout': '272px 1fr',
+      },
+      gridTemplateRows: {
+        'layout': '75px 1fr',
+      }
+    },
   },
   plugins: [],
 };

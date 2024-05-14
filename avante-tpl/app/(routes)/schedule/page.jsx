@@ -22,6 +22,7 @@ import { getShiftDate } from "@/app/utils/getShiftDate";
 import { useRouter } from "next/navigation";
 import usePublishers from "@/app/hooks/usePublishers";
 import UsersMenu from "@/app/components/Schedule/UsersMenu";
+import { equipmentColors } from "@/app/constants/equipmentColors";
 
 const compareDateTime = (date1, date2) => {
   return (
@@ -30,7 +31,7 @@ const compareDateTime = (date1, date2) => {
 };
 
 export default function Schedule() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const { publishers } = usePublishers();
   const { equipments } = useEquipments();
@@ -53,6 +54,12 @@ export default function Schedule() {
     isOpen: false,
     content: {},
   });
+
+  useEffect(() => {
+    if (status && status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [router, status]);
 
   useEffect(() => {
     if (equipments) {
@@ -203,15 +210,15 @@ export default function Schedule() {
 
         {/* Equipment Buttons */}
         {equipments &&
-          equipments.map((equipment) => (
+          equipments.map((equipment, index) => (
             <button
               key={equipment.id}
               onClick={() => setActiveEquipment(equipment.id)}
               className={`${
                 activeEquipment === equipment.id
-                  ? "text-blue-700 border-b-2 border-blue-700"
-                  : "text-gray-400 hover:text-blue-700"
-              } font-bold px-4 py-2`}
+                  ? `${equipmentColors[index].text} border-b-2 ${equipmentColors[index].border}`
+                  : `text-gray-400 ${equipmentColors[index].hover}`
+              } px-4 py-2`}
             >
               {equipment.name}
             </button>
@@ -227,6 +234,7 @@ export default function Schedule() {
               day={day}
               assignments={filterAssignments(day)}
               openMenu={openMenu}
+              color={equipmentColors[activeEquipment - 1].bg}
             />
           ))}
       </section>

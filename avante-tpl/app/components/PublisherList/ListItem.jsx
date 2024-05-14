@@ -1,6 +1,4 @@
-import { Space_Mono } from "next/font/google";
-
-export default function ListItem({ publisher, editMenu, deleteMenu }) {
+export default function ListItem({ publisher, deleteMenu }) {
   const { id, isAdmin, name, pioneer } = publisher;
   return (
     <tr>
@@ -30,9 +28,9 @@ export default function ListItem({ publisher, editMenu, deleteMenu }) {
         )}
       </td>
       <td className="flex justify-end gap-2 w-full p-3">
-        <button onClick={() => editMenu(publisher)}>
+        <a href={`/publishers/${id}/edit`}>
           <i className="bi bi-pencil-square p-2 rounded-md text-white bg-blue-500 hover:bg-blue-600"></i>
-        </button>
+        </a>
         <button onClick={() => deleteMenu(publisher)}>
           <i className="bi bi-trash p-2 rounded-md text-white bg-red-500 hover:bg-red-600"></i>
         </button>

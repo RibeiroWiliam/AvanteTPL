@@ -4,7 +4,7 @@ import { useState } from "react";
 import getMonth from "@/app/utils/getMonth";
 import { getShiftDate } from "@/app/utils/getShiftDate";
 
-export default function ScheduleTable({ day, assignments, openMenu }) {
+export default function ScheduleTable({ day, assignments, openMenu, color }) {
   const [expanded, setExpanded] = useState(true);
 
   const toggleExpanded = () => {
@@ -18,13 +18,13 @@ export default function ScheduleTable({ day, assignments, openMenu }) {
   };
 
   return (
-    <div className="w-full overflow-x-scroll">
-      <table className="w-full table-auto border-collapse text-center shadow">
+    <div className="w-full overflow-x-scroll shadow rounded-lg">
+      <table className="w-full table-auto border-collapse text-center">
         <thead>
           <tr>
             <th
               colSpan={shifts.length}
-              className="p-2 bg-blue-800 text-white relative text-sm md:text-base"
+              className={`p-2 ${color} text-white relative text-sm md:text-base`}
               onClick={toggleExpanded}
             >
               {expanded ? (
