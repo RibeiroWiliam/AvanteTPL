@@ -1,11 +1,11 @@
-export default function ListItem({ publisher, deleteMenu }) {
+export default function ListItem({ publisher, deleteMenu, color }) {
   const { id, isAdmin, name, pioneer } = publisher;
   return (
-    <tr>
-      <td className="py-2 hover:text-blue-700">
+    <tr className={color + ""}>
+      <td className="py-4 px-4 hover:text-blue-700">
         <a href={`/publishers/${id}`}>{name}</a>
       </td>
-      <td className="py-3 hidden md:table-cell">
+      <td className="py-4 hidden md:table-cell">
         {isAdmin && (
           <span className="py-2 px-4 text-orange-800 bg-orange-200 rounded-lg mr-2">
             Administrador

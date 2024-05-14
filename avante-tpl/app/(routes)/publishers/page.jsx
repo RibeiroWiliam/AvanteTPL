@@ -116,13 +116,14 @@ export default function Publishers() {
         <PublisherList.Header />
         <tbody>
           {publishers &&
-            applyFilters(publishers, activeFilter, search).map((publisher) => (
+            applyFilters(publishers, activeFilter, search).map((publisher, index) => (
               <PublisherList.Item
                 key={publisher.id}
                 publisher={publisher}
                 deleteMenu={(publisher) =>
                   setDeleteMenu({ open: true, publisher: publisher })
                 }
+                color={index % 2 === 0 ? "bg-white/50" : "bg-green-100/50"}
               />
             ))}
         </tbody>
